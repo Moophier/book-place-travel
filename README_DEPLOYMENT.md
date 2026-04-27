@@ -98,3 +98,68 @@ export SMTP_PORT="587"
 export SMTP_SERVER="smtp.163.com"
 export SMTP_PORT="587"
 ```
+
+## 🔐 安全配置
+
+### 设置环境变量
+
+在运行脚本前，请先设置环境变量：
+
+```bash
+# 方式1：使用 .env 文件（推荐）
+cp .env.example .env
+# 编辑 .env 文件填写您的信息
+
+# 方式2：直接导出
+export EMAIL_FROM="your@email.com"
+export EMAIL_TO="your@email.com"  
+export EMAIL_PASSWORD="your_password"
+export SMTP_SERVER="smtp.qq.com"
+export SMTP_PORT="587"
+export GITHUB_USERNAME="your_github_username"
+```
+
+### 邮箱服务配置
+
+| 服务商 | SMTP服务器 | 端口 | 加密方式 |
+|--------|------------|------|----------|
+| QQ邮箱 | smtp.qq.com | 587 | STARTTLS |
+| 163邮箱 | smtp.163.com | 587 | STARTTLS |
+| Gmail | smtp.gmail.com | 587 | STARTTLS |
+
+## 📋 使用步骤
+
+1. **填写配置信息**
+   ```bash
+   # 编辑 .env 文件
+   nano .env
+   ```
+
+2. **测试脚本**
+   ```bash
+   ./deploy_and_email.sh
+   ```
+
+3. **设置定时任务**
+   ```bash
+   crontab -e
+   # 添加定时任务（见 crontab_daily 文件）
+   ```
+
+## 🚀 完整部署流程
+
+```bash
+# 1. 克隆仓库
+git clone https://github.com/YOUR_USERNAME/book-place-travel.git
+cd book-place-travel
+
+# 2. 配置环境
+cp .env.example .env
+# 编辑 .env 文件
+
+# 3. 首次手动运行
+./deploy_and_email.sh
+
+# 4. 设置定时任务
+crontab crontab_daily
+```
