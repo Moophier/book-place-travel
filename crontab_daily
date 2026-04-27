@@ -1,0 +1,10 @@
+# 每日北京时间早上8点自动运行
+# 使用方法: crontab -e，然后添加以下行
+
+# 每天上午8:00执行（北京时间）
+0 8 * * * /bin/bash /c/Users/X/Projects/book-place-travel/deploy_and_email.sh \
+  "your_github_username" \
+  "your_email@qq.com" \
+  "your_email_password" \
+  "smtp.qq.com" \
+  587 >> /var/log/book_place_travel.log 2>&1
