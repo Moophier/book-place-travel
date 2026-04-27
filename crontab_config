@@ -1,0 +1,8 @@
+# 定时任务配置 - 每天早上8点运行
+# 使用 crontab -e 添加以下行
+
+# 每天上午8:30执行（北京时间）
+30 8 * * * /bin/bash /c/Users/X/Projects/book-place-travel/deploy_and_email.sh YOUR_GITHUB_USERNAME YOUR_EMAIL YOUR_EMAIL_PASSWORD smtp.example.com 587 >> /var/log/book_place_travel.log 2>&1
+
+# 每周一上午9:00执行（可选：每周更新）
+0 9 * * 1 /bin/bash /c/Users/X/Projects/book-place-travel/deploy_and_email.sh YOUR_GITHUB_USERNAME YOUR_EMAIL YOUR_EMAIL_PASSWORD smtp.example.com 587 >> /var/log/book_place_travel.log 2>&1
