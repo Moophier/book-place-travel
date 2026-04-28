@@ -1,0 +1,43 @@
+name: Daily Deploy and Email
+
+on:
+  schedule:
+    - cron: '0 0 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+    
+    - name: Push to GitHub
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git push origin master
+        git tag -f v1.0.0
+        git push origin v1.0.0
+    
+    - name: Process and Email
+      env:
+        EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+        SMTP_PORT: ${{ secrets.SMTP_PORT }}
+      run: |
+        python << 'PYEOF'
+        import sys
+        sys.path.insert(0, '.')
+        from main_pipeline import process_book_text
+        text = "在瑞士的达沃斯，作家托马斯·曼创作了《魔山》。"
+        result = process_book_text(text)
+        print(f"地点: {result['book_analysis']['unique_locations']}")
+        PYEOF
