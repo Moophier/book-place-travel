@@ -1,0 +1,33 @@
+name = "literary-footprints"
+main = "src/worker/index.js"
+compatibility_date = "2025-04-01"
+
+# D1 Database (User data, check-ins, favorites)
+[[d1_databases]]
+binding = "DB"
+database_name = "literary-footprints-db"
+database_id = ""
+
+# R2 Storage (PDFs, images, assets)
+[[r2_buckets]]
+binding = "ASSETS"
+bucket_name = "literary-footprints-assets"
+
+# AI Workers for translation
+[ai]
+binding = "AI"
+
+# Environment variables
+[vars]
+API_MODE = "cloudflare"
+SITE_URL = "https://literary-footprints.pages.dev"
+
+# Routes
+routes = [
+	{ pattern = "literary-footprints.pages.dev", zone_id = "" }
+]
+
+# Pages configuration
+[pages]
+build_command = ""
+build_output_dir = "/"

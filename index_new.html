@@ -2488,7 +2488,12 @@
       'literary-1': ['🏨 疗养院主题酒店', '🍵 山间茶歇', '📖 读书会'],
       'literary-2': ['🚂 冰川列车', '🏨 达沃斯小镇酒店', '⛷️ 冬季运动'],
       'literary-3': ['🍽️ 雪山景观餐厅', '🏨 山庄住宿', '🍷 品酒体验'],
-      'literary-4': ['⛷️ 滑雪体验', '🏨 山间小屋', '❄️ 冰雪奇观']
+      'literary-4': ['⛷️ 滑雪体验', '🏨 山间小屋', '❄️ 冰雪奇观'],
+      'literary-5': ['🏨 吉祥寺民宿', '☕ 井之头咖啡馆', '🎸 现场音乐酒吧'],
+      'literary-6': ['🏛️ 青山历史导览', '🌸 樱花季散步', '🍵 表参道茶室'],
+      'literary-7': ['🏨 吉野温泉旅馆', '🌸 吉野山徒步', '🍱 奈良乡土料理'],
+      'literary-8': ['📚 早大校园导览', '☕ 神保町古书街', '🗼 新宿文学散步'],
+      'literary-9': ['🎵 三鹰爵士酒吧', '🏛️ 吉卜力美术馆', '🍺 下北泽音乐之旅']
     };
 
     // Author Badge Definitions
@@ -2497,7 +2502,8 @@
       { author: 'Stefan Zweig', cnAuthor: '茨威格', emoji: '🎭', total: 3 },
       { author: 'Virgil', cnAuthor: '维吉尔', emoji: '🏛️', total: 2 },
       { author: 'Wang Wei', cnAuthor: '王维', emoji: '🏯', total: 2 },
-      { author: 'Lu Xun', cnAuthor: '鲁迅', emoji: '🖋️', total: 2 }
+      { author: 'Lu Xun', cnAuthor: '鲁迅', emoji: '🖋️', total: 2 },
+      { author: 'Haruki Murakami', cnAuthor: '村上春树', emoji: '🎸', total: 5 }
     ];
 
     // Data
@@ -2585,15 +2591,60 @@
         quote: 'Snow is the white shroud of time.',
         desc: '汉斯与克拉芙迪娅漫步的雪地，死亡与永恒的隐喻。',
         atmosphere: ['desolate', 'mystical', 'lonely']
+      },
+      {
+        id: 'literary-5', type: 'literary', author: 'Haruki Murakami', cnAuthor: '村上春树',
+        work: 'Norwegian Wood', cnWork: '《挪威的森林》',
+        location: 'Kichijoji, Tokyo', cnLocation: '东京吉祥寺',
+        bgClass: 'card-image-literary', emoji: '🎸', stamp: '青春',
+        quote: '每个人都有属于自己的一片森林，迷失的人迷失了，相逢的人会再相逢。',
+        desc: '渡边彻与直子、绿子相遇的井之头公园，青春的迷茫与恋爱。',
+        atmosphere: ['nostalgic', 'lonely', 'romantic']
+      },
+      {
+        id: 'literary-6', type: 'literary', author: 'Haruki Murakami', cnAuthor: '村上春树',
+        work: 'Norwegian Wood', cnWork: '《挪威的森林》',
+        location: 'Aoyama Cemetery, Tokyo', cnLocation: '东京青山墓地',
+        bgClass: 'card-image-literary', emoji: '🌿', stamp: '生死',
+        quote: '死并不是生的对立面，而是作为生的一部分永存。',
+        desc: '直子常常提起的墓地，小说中关于死亡与重生的思考场所。',
+        atmosphere: ['contemplative', 'mystical', 'lonely']
+      },
+      {
+        id: 'literary-7', type: 'literary', author: 'Haruki Murakami', cnAuthor: '村上春树',
+        work: 'Norwegian Wood', cnWork: '《挪威的森林》',
+        location: 'Yoshino, Nara', cnLocation: '奈良吉野',
+        bgClass: 'card-image-literary', emoji: '🌸', stamp: '回忆',
+        quote: '记忆就像那场大雪，覆盖了所有，却掩不住春天的痕迹。',
+        desc: '直子疗养的深山疗养院，远离尘世的寂静之地。',
+        atmosphere: ['healing', 'nostalgic', 'desolate']
+      },
+      {
+        id: 'literary-8', type: 'literary', author: 'Haruki Murakami', cnAuthor: '村上春树',
+        work: 'Norwegian Wood', cnWork: '《挪威的森林》',
+        location: 'Waseda University', cnLocation: '早稻田大学',
+        bgClass: 'card-image-literary', emoji: '📚', stamp: '原点',
+        quote: '我在一片混沌中寻找自己的位置，就像在森林中寻找出路。',
+        desc: '小说主角渡边的大学生活场景，青春时代的起点。',
+        atmosphere: ['romantic', 'nostalgic', 'healing']
+      },
+      {
+        id: 'literary-9', type: 'literary', author: 'Haruki Murakami', cnAuthor: '村上春树',
+        work: 'Norwegian Wood', cnWork: '《挪威的森林》',
+        location: 'Mitaka, Tokyo', cnLocation: '东京三鹰',
+        bgClass: 'card-image-literary', emoji: '🎶', stamp: '音乐',
+        quote: '挪威的森林，就像那首Beatles的歌，不知为何总让人落泪。',
+        desc: '渡边反复听Norwegian Wood唱片的小公寓，小说标题的来源。',
+        atmosphere: ['lonely', 'nostalgic', 'contemplative']
       }
     ];
 
     const rankings = [
       { title: '《魔山》贝尔格霍夫疗养院', author: 'Thomas Mann', votes: 2847 },
       { title: '茨威格故居 · 维也纳', author: 'Stefan Zweig', votes: 2531 },
+      { title: '《挪威的森林》井之头公园', author: 'Haruki Murakami', votes: 2460 },
       { title: '鲁迅故里 · 绍兴水乡', author: 'Lu Xun', votes: 2398 },
-      { title: '王维辋川 · 西安', author: 'Wang Wei', votes: 2105 },
-      { title: '《埃涅阿斯纪》罗马', author: 'Virgil', votes: 1876 }
+      { title: '王维辋川 · 西安', author: 'Wang Wei', votes: 2105 }
     ];
 
     // Combine all cards
@@ -2944,6 +2995,19 @@
         { author: 'Goethe', cnAuthor: '歌德', avatar: 'G', quote: 'Rome - the eternal city, where every stone tells a story.', work: '《意大利之旅》' },
         { author: 'Oscar Wilde', cnAuthor: '王尔德', avatar: 'O', quote: 'Rome is the capital of the world.', work: '《道林·格雷的画像》' }
       ],
+      'Kichijoji, Tokyo': [
+        { author: 'Haruki Murakami', cnAuthor: '村上春树', avatar: '村', quote: '每个人都有属于自己的一片森林，迷失的人迷失了，相逢的人会再相逢。', work: '《挪威的森林》' },
+        { author: 'Yoshimoto Banana', cnAuthor: '吉本芭娜娜', avatar: 'Y', quote: '吉祥寺的午后，阳光像被谁打翻的蜂蜜罐。', work: '《厨房》' },
+        { author: 'Natsume Soseki', cnAuthor: '夏目漱石', avatar: '漱', quote: '井之头的水面映着云，像人的心一样捉摸不定。', work: '《心》' }
+      ],
+      'Aoyama Cemetery, Tokyo': [
+        { author: 'Haruki Murakami', cnAuthor: '村上春树', avatar: '村', quote: '死并不是生的对立面，而是作为生的一部分永存。', work: '《挪威的森林》' },
+        { author: 'Stefan Zweig', cnAuthor: '茨威格', avatar: 'Z', quote: '墓地是城市中最安静的角落，也是最喧闹的地方。', work: '《昨日的世界》' }
+      ],
+      'Yoshino, Nara': [
+        { author: 'Haruki Murakami', cnAuthor: '村上春树', avatar: '村', quote: '吉野的樱花像一场无声的雪，落在心里。', work: '《挪威的森林》' },
+        { author: 'Matsuo Basho', cnAuthor: '松尾芭蕉', avatar: '芭', quote: '吉野山花纷飞处，人世如梦。', work: '《奥之细道》' }
+      ],
       'default': [
         { author: 'Unknown', cnAuthor: '旅人', avatar: '?', quote: 'A place where literature meets the world.', work: '' }
       ]
@@ -2959,7 +3023,12 @@
       'literary-1': { lat: 46.7931, lng: 9.8282, place: 'Berghof,Davos' },
       'literary-2': { lat: 46.8000, lng: 9.8167, place: 'Davos,Switzerland' },
       'literary-3': { lat: 46.7950, lng: 9.8300, place: 'Schlossrala,Davos' },
-      'literary-4': { lat: 46.7900, lng: 9.8500, place: 'Davos,Snowfield' }
+      'literary-4': { lat: 46.7900, lng: 9.8500, place: 'Davos,Snowfield' },
+      'literary-5': { lat: 35.7005, lng: 139.5789, place: 'Kichijoji,Tokyo' },
+      'literary-6': { lat: 35.6654, lng: 139.7221, place: 'Aoyama,Tokyo' },
+      'literary-7': { lat: 34.3961, lng: 135.8534, place: 'Yoshino,Nara' },
+      'literary-8': { lat: 35.7071, lng: 139.7189, place: 'Waseda,Tokyo' },
+      'literary-9': { lat: 35.6950, lng: 139.5561, place: 'Mitaka,Tokyo' }
     };
 
     // Map position data (approximate coordinates in %)
@@ -2972,7 +3041,12 @@
       'literary-1': { x: 52, y: 28, type: 'literary' },
       'literary-2': { x: 52, y: 27, type: 'literary' },
       'literary-3': { x: 53, y: 29, type: 'literary' },
-      'literary-4': { x: 51, y: 30, type: 'literary' }
+      'literary-4': { x: 51, y: 30, type: 'literary' },
+      'literary-5': { x: 82, y: 55, type: 'literary' },
+      'literary-6': { x: 82, y: 56, type: 'literary' },
+      'literary-7': { x: 79, y: 57, type: 'literary' },
+      'literary-8': { x: 82, y: 54, type: 'literary' },
+      'literary-9': { x: 81, y: 56, type: 'literary' }
     };
 
     // Journey data
@@ -3408,38 +3482,65 @@
 
     // Backend API integration
     const BACKEND = {
-      search: 'http://localhost:8000',
-      payment: 'http://localhost:8002',
-      b2b: 'http://localhost:8003'
+      local: {
+        search: 'http://localhost:8000',
+        payment: 'http://localhost:8002',
+        b2b: 'http://localhost:8003'
+      },
+      cloudflare: {
+        search: 'https://literary-footprints-api.moophier.workers.dev',
+        payment: 'https://literary-footprints-api.moophier.workers.dev',
+        b2b: 'https://literary-footprints-api.moophier.workers.dev',
+        worker: 'https://literary-footprints-api.moophier.workers.dev'
+      }
     };
 
     function getApiMode() {
       return localStorage.getItem('api_mode') || 'mock';
     }
 
+    function getBaseUrl() {
+      const mode = getApiMode();
+      if (mode === 'cloudflare') return BACKEND.cloudflare.worker;
+      if (mode === 'api') return BACKEND.local.search;
+      return null;
+    }
+
+    async function apiFetch(endpoint, options = {}) {
+      const mode = getApiMode();
+      if (mode === 'mock') return null;
+
+      const base = getBaseUrl();
+      try {
+        const res = await fetch(`${base}${endpoint}`, {
+          ...options,
+          headers: { 'Content-Type': 'application/json', ...options.headers }
+        });
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+        return await res.json();
+      } catch (e) {
+        console.warn('API request failed, falling back to mock:', e.message);
+        return null;
+      }
+    }
+
     async function searchLiteraryPlaces(query) {
-      if (getApiMode() === 'mock') {
+      const mode = getApiMode();
+      if (mode === 'mock') {
         return allCards.filter(c => 
           c.location.toLowerCase().includes(query.toLowerCase()) ||
           c.author.toLowerCase().includes(query.toLowerCase())
         );
       }
-      try {
-        const res = await fetch(`http://localhost:8000/search?q=${encodeURIComponent(query)}`);
-        return await res.json();
-      } catch (e) {
-        console.warn('API not available, using local data:', e);
-        return allCards.filter(c => c.location.toLowerCase().includes(query.toLowerCase()));
-      }
+      const data = await apiFetch(`/api/search?q=${encodeURIComponent(query)}`);
+      if (data?.results) return data.results;
+      return allCards.filter(c => c.location.toLowerCase().includes(query.toLowerCase()));
     }
 
-    async function fetchB2BHeatmap() {
-      try {
-        const res = await fetch(`http://localhost:8003/heatmap?lat=46.8&lng=9.82`);
-        return await res.json();
-      } catch (e) {
-        return { points: [] };
-      }
+    async function fetchB2BHeatmap(lat = 46.8, lng = 9.82) {
+      const data = await apiFetch(`/api/heatmap?lat=${lat}&lng=${lng}&radius=10`);
+      if (data?.points) return data;
+      return { points: [] };
     }
 
     // Lazy load images
