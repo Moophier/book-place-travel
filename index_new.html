@@ -2024,12 +2024,90 @@
       transform: translateY(0);
     }
 
+    /* Skeleton Loading */
+    @keyframes shimmer {
+      0% { background-position: -200px 0; }
+      100% { background-position: 200px 0; }
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, rgba(45,45,68,0.3) 25%, rgba(45,45,68,0.5) 50%, rgba(45,45,68,0.3) 75%);
+      background-size: 400px 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    .skeleton-card {
+      height: 300px;
+      border-radius: 16px;
+    }
+
+    .skeleton-text {
+      height: 16px;
+      margin-bottom: 0.75rem;
+      width: 60%;
+    }
+
+    .skeleton-text.short { width: 40%; }
+
     /* Responsive */
+    @media (max-width: 1024px) {
+      .journey-steps { gap: 1rem; }
+      .journey-step:not(:last-child)::after { display: none; }
+      .rank-cards { gap: 1rem; }
+      .rank-card { width: 150px; }
+    }
+
     @media (max-width: 768px) {
       .cards-grid { grid-template-columns: 1fr; }
       .hero-title { font-size: 2.5rem; }
+      .hero-title .en { font-size: 0.35em; }
       .tab-switcher { gap: 0.5rem; }
       .tab-btn { padding: 0.5rem 1rem; font-size: 0.75rem; }
+      .time-filter { gap: 0.5rem; }
+      .time-tag { padding: 0.4rem 0.75rem; font-size: 0.65rem; }
+      .atmosphere-filter { gap: 0.5rem; }
+      .atmosphere-tag { font-size: 0.65rem; padding: 0.35rem 0.75rem; }
+      .hero-subtitle { font-size: 0.9rem; }
+      section { padding: 2rem 1rem; }
+      .profile-header { flex-direction: column; align-items: flex-start; }
+      .profile-stats { margin-left: 0; width: 100%; justify-content: space-around; }
+      .stamp-collection { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 1rem; }
+      .badges-container { gap: 1rem; }
+      .badge-icon { width: 60px; height: 60px; font-size: 1.5rem; }
+      .journey-steps { flex-direction: column; align-items: center; }
+      .journey-step { width: 100%; max-width: 300px; flex-direction: row; gap: 1rem; }
+      .journey-step:not(:last-child)::after { display: none; }
+      .step-icon { width: 45px; height: 45px; font-size: 1.25rem; margin-bottom: 0; }
+      .map-container { height: 250px; }
+      .commission-flow { flex-wrap: wrap; gap: 0.5rem; }
+      .commission-arrow { display: none; }
+      .floating-creator { bottom: 1rem; right: 1rem; }
+      .creator-btn { width: 50px; height: 50px; font-size: 1.25rem; }
+      .supplier-dashboard-link { display: none; }
+      .lang-switch { top: 0.5rem; left: 0.5rem; }
+      .itinerary-count { top: 0.5rem; right: 0.5rem; font-size: 0.65rem; padding: 0.35rem 0.75rem; }
+      .itinerary-drawer { width: 100%; right: -100%; }
+      .rank-cards { flex-direction: column; align-items: center; }
+      .rank-card { width: 100%; max-width: 280px; }
+      .social-tabs { gap: 0.5rem; }
+      .social-tab { padding: 0.5rem 1rem; font-size: 0.75rem; }
+      .partner-claim { display: none; }
+      .serial-popup { width: 90%; padding: 1.5rem; }
+      .serial-code { font-size: 1rem; }
+      .experience-module { padding: 0.75rem; }
+      .experience-item { flex-wrap: wrap; }
+      .modal-content { max-height: 90vh; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title { font-size: 1.8rem; }
+      .section-title { font-size: 1.5rem; }
+      .profile-stats { flex-wrap: wrap; gap: 0.5rem; }
+      .profile-stat { width: 30%; }
+      .profile-stat-value { font-size: 1.1rem; }
+      .card-actions { flex-direction: column; }
+      .geo-banner { font-size: 0.65rem; padding: 0.5rem; }
     }
   </style>
 </head>
@@ -2298,10 +2376,16 @@
     
     <div class="map-container fade-up">
       <div class="map-markers" id="mapMarkers"></div>
-      <div class="map-placeholder">
+      <div class="map-placeholder" id="mapPlaceholder" style="display:none;">
         <div class="map-placeholder-emoji">🗺️</div>
-        <p style="color:var(--paper);opacity:0.5;">点击标记查看详情</p>
+        <p style="color:var(--paper);opacity:0.5;">正在加载地图...</p>
       </div>
+      <iframe id="mapFrame"
+        width="100%" height="100%" style="border:0;display:none;"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        src="">
+      </iframe>
     </div>
     <div class="map-legend">
       <div class="map-legend-item"><div class="map-legend-dot" style="background:var(--gold)"></div>世界遗产</div>
@@ -2865,6 +2949,19 @@
       ]
     };
 
+    // Map position data (real lat/lng coordinates)
+    const mapCoordinates = {
+      'heritage-1': { lat: 46.8011, lng: 9.8227, place: 'Davos,Switzerland' },
+      'heritage-2': { lat: 48.2082, lng: 16.3738, place: 'Vienna,Austria' },
+      'heritage-3': { lat: 41.9028, lng: 12.4964, place: 'Rome,Italy' },
+      'heritage-4': { lat: 34.3416, lng: 108.9398, place: 'Xi'an,China' },
+      'heritage-5': { lat: 29.9961, lng: 120.5811, place: 'Shaoxing,China' },
+      'literary-1': { lat: 46.7931, lng: 9.8282, place: 'Berghof,Davos' },
+      'literary-2': { lat: 46.8000, lng: 9.8167, place: 'Davos,Switzerland' },
+      'literary-3': { lat: 46.7950, lng: 9.8300, place: 'Schlossrala,Davos' },
+      'literary-4': { lat: 46.7900, lng: 9.8500, place: 'Davos,Snowfield' }
+    };
+
     // Map position data (approximate coordinates in %)
     const mapPositions = {
       'heritage-1': { x: 52, y: 28, type: 'heritage' },
@@ -2897,6 +2994,7 @@
     function renderMapMarkers() {
       const container = document.getElementById('mapMarkers');
       const visited = JSON.parse(localStorage.getItem('visitedCards') || '[]');
+      const frame = document.getElementById('mapFrame');
       
       container.innerHTML = allCards.map(card => {
         const pos = mapPositions[card.id];
@@ -2908,6 +3006,18 @@
         return `<div class="map-marker" style="left:${pos.x}%;top:${pos.y}%;background:${color}" 
                 onclick="openCardModal('${card.id}')" title="${card.location}">${card.emoji}</div>`;
       }).join('');
+
+      // Load Google Maps iframe
+      const apiKey = 'OI61D2lqRJyzEu5dXQPbeSfxjN8';
+      const markers = allCards.map(c => {
+        const coords = mapCoordinates[c.id];
+        if (!coords) return '';
+        return `&markers=color:${visited.includes(c.id) ? 'red' : 'gold'}%7Clabel:${c.emoji}%7C${coords.lat},${coords.lng}`;
+      }).filter(Boolean).join('');
+
+      frame.src = `https://www.google.com/maps/embed/v1/search?key=${apiKey}&q=literary+landmarks+worldwide&zoom=2&maptype=satellite`;
+      frame.style.display = 'block';
+      document.getElementById('mapPlaceholder').style.display = 'none';
     }
 
     // Render journey timeline
@@ -3296,6 +3406,74 @@
       return `LF-${authorCode}-${cardCode}-${timestamp.substring(0, 6)}`;
     }
 
+    // Backend API integration
+    const BACKEND = {
+      search: 'http://localhost:8000',
+      payment: 'http://localhost:8002',
+      b2b: 'http://localhost:8003'
+    };
+
+    function getApiMode() {
+      return localStorage.getItem('api_mode') || 'mock';
+    }
+
+    async function searchLiteraryPlaces(query) {
+      if (getApiMode() === 'mock') {
+        return allCards.filter(c => 
+          c.location.toLowerCase().includes(query.toLowerCase()) ||
+          c.author.toLowerCase().includes(query.toLowerCase())
+        );
+      }
+      try {
+        const res = await fetch(`http://localhost:8000/search?q=${encodeURIComponent(query)}`);
+        return await res.json();
+      } catch (e) {
+        console.warn('API not available, using local data:', e);
+        return allCards.filter(c => c.location.toLowerCase().includes(query.toLowerCase()));
+      }
+    }
+
+    async function fetchB2BHeatmap() {
+      try {
+        const res = await fetch(`http://localhost:8003/heatmap?lat=46.8&lng=9.82`);
+        return await res.json();
+      } catch (e) {
+        return { points: [] };
+      }
+    }
+
+    // Lazy load images
+    function lazyLoadImages() {
+      if ('IntersectionObserver' in window) {
+        const imgObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const img = entry.target;
+              if (img.dataset.src) {
+                img.src = img.dataset.src;
+                img.removeAttribute('data-src');
+              }
+              imgObserver.unobserve(img);
+            }
+          });
+        });
+        document.querySelectorAll('img[data-src]').forEach(img => imgObserver.observe(img));
+      }
+    }
+
+    // Loading state
+    function showLoading(containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.innerHTML = '<div class="skeleton skeleton-card"></div>'.repeat(3);
+    }
+
+    function hideLoading(containerId, content) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.innerHTML = content;
+    }
+
     window.renderStampCollection = renderStampCollection;
     window.toggleCardFlip = toggleCardFlip;
     window.setLanguage = setLanguage;
@@ -3448,6 +3626,8 @@
     renderStampCollection();
     detectGeoLocation();
     observeElements();
+    lazyLoadImages();
+    // Switch to live API: localStorage.setItem('api_mode', 'api')
   </script>
 </body>
 </html>
