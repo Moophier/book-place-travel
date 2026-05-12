@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/Moophier/book-place-travel/issues"
   },
-  "homepage": "https://github.com/Moophier/book-place-travel#readme"
+  "homepage": "https://github.com/Moophier/book-place-travel#readme",
+  "devDependencies": {
+    "wrangler": "^4.90.1"
+  }
 }
