@@ -15,6 +15,41 @@ const SITES = [
   { id: 'literary-9', type: 'literary', author: 'Haruki Murakami', cnAuthor: '村上春树', work: 'Norwegian Wood', cnWork: '《挪威的森林》', location: 'Mitaka, Tokyo', cnLocation: '东京三鹰', emoji: '🎶', stamp: '音乐', quote: '挪威的森林，让人落泪。', desc: '渡边听Norwegian Wood的公寓。', atmosphere: ['lonely', 'nostalgic', 'contemplative'], lat: 35.6950, lng: 139.5561 }
 ];
 
+const ROOT_HTML = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>文迹 Literary Footprints - API</title>
+<style>
+  body{background:#0f0f1a;color:#f5f0e8;font-family:'Noto Serif SC',serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:2rem}
+  .container{max-width:600px;text-align:center}
+  h1{font-size:2rem;background:linear-gradient(135deg,#e8d5a3,#c9a84c,#c47d3a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1rem}
+  p{color:rgba(245,240,232,0.6);line-height:1.8;margin-bottom:1.5rem}
+  .endpoints{text-align:left;font-size:0.8rem;background:rgba(45,45,68,0.5);border-radius:12px;padding:1.5rem;border:1px solid rgba(201,168,76,0.2)}
+  .endpoints code{display:block;color:#c9a84c;margin-bottom:0.5rem;font-family:monospace}
+  .endpoints .desc{color:rgba(245,240,232,0.5);margin-bottom:1rem}
+  .status{display:inline-block;padding:0.35rem 1rem;border-radius:50px;font-size:0.7rem;border:1px solid rgba(201,168,76,0.3);color:#c9a84c;margin-bottom:2rem}
+  a{color:#c9a84c}
+</style></head>
+<body><div class="container">
+  <h1>文迹 · Literary Footprints</h1>
+  <div class="status">⚡ API Service Running</div>
+  <p>文学坐标巡礼平台的后端API服务</p>
+  <div class="endpoints">
+    <strong style="color:#c9a84c;">可用接口</strong>
+    <div style="margin-top:1rem">
+      <code>GET /api/health</code><div class="desc">服务状态检查</div>
+      <code>GET /api/search?q=鲁迅</code><div class="desc">文学坐标搜索</div>
+      <code>GET /api/site/:id</code><div class="desc">单卡片详情</div>
+      <code>GET /api/recommend?lat=35&lng=139</code><div class="desc">地理位置推荐</div>
+      <code>GET /api/heatmap?lat=46.8&lng=9.82</code><div class="desc">B2B热力图</div>
+      <code>POST /api/commission</code><div class="desc">分佣结算</div>
+      <code>POST /api/translate</code><div class="desc">AI文学翻译</div>
+    </div>
+  </div>
+  <p style="margin-top:1.5rem;font-size:0.7rem"><a href="https://literary-footprints.pages.dev">访问前端</a></p>
+</div></body>
+</html>`;
+
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -48,9 +83,14 @@ async function handleRequest(request, env) {
     return new Response(null, { headers: CORS_HEADERS });
   }
 
+  // Root - API documentation page
+  if (path === '/') {
+    return new Response(ROOT_HTML, { headers: { 'Content-Type': 'text/html;charset=utf-8' } });
+  }
+
   // Health
   if (path === '/api/health') {
-    return json({ status: 'ok', service: 'literary-footprints' });
+    return json({ status: 'ok', service: 'literary-footprints', version: '1.0.0', endpoints: ['/api/health', '/api/search', '/api/site/:id', '/api/recommend', '/api/heatmap', '/api/commission', '/api/translate'] });
   }
 
   // Search
