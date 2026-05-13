@@ -197,7 +197,7 @@ body{overflow-y:auto}
     <div class="hero-divider"><div class="hero-divider-line"></div><div class="hero-divider-diamond"></div><div class="hero-divider-line right"></div></div>
     <p class="hero-tagline">用 Design.md 书写你的文学朝圣路线<br>每一张卡片，都是情感的独享资产<br>守护人类共同的文化记忆</p>
     <div class="hero-cta-group">
-      <a class="btn-primary" href="#design">获取 Design.md</a>
+      <a class="btn-primary" href="#" onclick="event.preventDefault();doSubscribe()">获取 Design.md</a>
       <a class="btn-ghost" href="#board">探索巡礼榜</a>
     </div>
     <div class="hero-stats">
@@ -249,7 +249,7 @@ body{overflow-y:auto}
           <div class="price-main">¥ 68</div>
           <div class="price-period">/ 年 · Per Year</div>
           <ul class="price-features"><li>完整 Design.md 规范文档</li><li>文学坐标验证标准与引言规范</li><li>视觉输出模板（HTML / PDF）</li><li>卡片上榜资格 · 积分体系准入</li><li>创造者社群准入与季度选题参考</li></ul>
-          <a class="price-btn" href="#">申请创作资格</a>
+          <a class="price-btn" href="#" onclick="event.preventDefault();doSubscribe()">申请创作资格</a>
           <p class="price-note">订阅即认同平台情怀公约</p>
         </div>
       </div>
@@ -285,13 +285,13 @@ body{overflow-y:auto}
       <div class="section-label">平台宣言 · Manifesto</div>
       <div class="manifesto-seal"><div class="manifesto-seal-inner">文</div></div>
       <p class="manifesto-text">我们相信，<strong>文学不只是阅读的事</strong>。<br>它应该被走进去，被感受，被以身体丈量。<br><br>每一张巡礼卡片，都是一个人<strong>用情感与文字创造的私人资产</strong>，<br>也是人类共同文化记忆的一个坐标。<br><br>我们收取情怀的门槛费，<strong>不为盈利，为了纯净</strong>。<br>让真正热爱的人，在这里找到彼此。</p>
-      <a class="btn-primary" style="display:inline-block;margin-bottom:1rem" href="#design">加入文迹</a>
+      <a class="btn-primary" style="display:inline-block;margin-bottom:1rem" href="#" onclick="event.preventDefault();currentUser?showProfile():showAuth()">加入文迹</a>
     </div>
   </div>
 </section>
 <footer>
   <div class="footer-brand"><span>文迹</span>Literary Footprints</div>
-  <ul class="footer-links"><li><a href="#">关于平台</a></li><li><a href="#">创作规范</a></li><li><a href="#">供应商合作</a></li><li><a href="#">联系我们</a></li></ul>
+  <ul class="footer-links"><li><a href="#">关于平台</a></li><li><a href="#">创作规范</a></li><li><a href="#" onclick="event.preventDefault();showPartnerForm()">供应商合作</a></li><li><a href="#">联系我们</a></li></ul>
   <div class="footer-copy">© 2026 Literary Footprints · 守护人类共同的文化记忆</div>
 </footer>
 <script>
@@ -301,6 +301,147 @@ window.addEventListener('scroll',()=>{const nav=document.querySelector('nav');na
 
 // ── API Base ──
 const API = 'https://literary-footprints-api.moop.workers.dev';
+let currentUser = JSON.parse(localStorage.getItem('lf_user') || 'null');
+const DIALOG_STYLES = ['color:#f5ede0;background:rgba(13,12,10,0.9);border:2px solid rgba(201,168,76,0.4);border-radius:8px;padding:1rem;font-family:\'Noto Serif SC\',serif;max-width:90%', ''];
+
+// ── Auth Modal ──
+function showAuth() {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;padding:2rem';
+  overlay.onclick = () => overlay.remove();
+  const box = document.createElement('div');
+  box.style.cssText = 'background:#181610;border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:2rem;max-width:400px;width:100%';
+  box.onclick = e => e.stopPropagation();
+  box.innerHTML = \`
+    <div style="display:flex;justify-content:space-between;margin-bottom:1.5rem">
+      <span style="font-size:1.1rem;font-weight:700;color:#f5ede0">登录 / 注册</span>
+      <button onclick="this.closest('div[style]').remove()" style="background:none;border:none;color:rgba(245,237,224,0.4);font-size:1.3rem;cursor:pointer">x</button>
+    </div>
+    <div id="authForm">
+      <p style="font-size:0.8rem;color:rgba(245,237,224,0.6);margin-bottom:1.2rem">输入邮箱和昵称即可加入文迹</p>
+      <input type="text" id="authName" placeholder="昵称" style="width:100%;padding:0.7rem 1rem;margin-bottom:0.75rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:'Noto Serif SC',serif;font-size:0.8rem;outline:none">
+      <input type="email" id="authEmail" placeholder="邮箱" style="width:100%;padding:0.7rem 1rem;margin-bottom:1.2rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:'Noto Serif SC',serif;font-size:0.8rem;outline:none">
+      <button onclick="doRegister()" style="width:100%;padding:0.8rem;background:linear-gradient(135deg,#e8d5a3,#c9a84c);border:none;border-radius:2px;color:#0d0c0a;font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.25em;cursor:pointer;text-transform:uppercase;margin-bottom:0.5rem">注册 / 登录</button>
+      <p style="font-size:0.6rem;color:rgba(245,237,224,0.3);text-align:center">已有账号？输入相同邮箱即可登录</p>
+    </div>
+    <div id="authSuccess" style="display:none;text-align:center;padding:1rem 0">
+      <div style="font-size:2rem;margin-bottom:0.75rem">🎉</div>
+      <p style="font-size:0.9rem;color:#c9a84c;margin-bottom:0.5rem" id="authGreeting">欢迎加入文迹！</p>
+      <p style="font-size:0.75rem;color:rgba(245,237,224,0.6)" id="authStatus"></p>
+    </div>
+  \`;
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+async function doRegister() {
+  const name = document.getElementById('authName').value.trim();
+  const email = document.getElementById('authEmail').value.trim();
+  if (!name || !email) { alert('请填写昵称和邮箱'); return; }
+  try {
+    const res = await fetch(API + '/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username:name, email}) });
+    const data = await res.json();
+    if (data.error) {
+      if (data.error.includes('already')) {
+        const loginRes = await fetch(API + '/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email}) });
+        const loginData = await loginRes.json();
+        if (loginData.error) { alert(loginData.error); return; }
+        currentUser = loginData; localStorage.setItem('lf_user', JSON.stringify(loginData));
+      } else { alert(data.error); return; }
+    } else {
+      currentUser = data; localStorage.setItem('lf_user', JSON.stringify(data));
+    }
+    updateNavUser();
+    document.getElementById('authForm').style.display = 'none';
+    const s = document.getElementById('authSuccess');
+    s.style.display = 'block';
+    document.getElementById('authGreeting').textContent = currentUser.name + '，欢迎加入文迹！';
+    document.getElementById('authStatus').textContent = '当前等级：' + (currentUser.rank || 'C') + ' · 已可探索所有坐标';
+    setTimeout(() => { overlay?.remove(); }, 2000);
+  } catch(e) { alert('服务暂不可用'); }
+}
+
+// ── Subscribe (Design.md) ──
+async function doSubscribe() {
+  if (!currentUser) { showAuth(); return; }
+  if (currentUser.rank && currentUser.rank !== 'C') { alert('你已订阅 Design.md！'); return; }
+  if (!confirm('确认支付 ¥68 订阅 Design.md 年度创作资格？')) return;
+  try {
+    const res = await fetch(API + '/api/subscribe', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({userId: currentUser.id}) });
+    const data = await res.json();
+    if (data.error) { alert(data.error); return; }
+    currentUser.rank = 'B';
+    localStorage.setItem('lf_user', JSON.stringify(currentUser));
+    updateNavUser();
+    alert('订阅成功！你现在拥有了卡片创作资格。');
+  } catch(e) { alert('订阅服务暂不可用'); }
+}
+
+// ── Partner Apply ──
+function showPartnerForm() {
+  if (!currentUser) { showAuth(); return; }
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;padding:2rem';
+  overlay.onclick = () => overlay.remove();
+  const box = document.createElement('div');
+  box.style.cssText = 'background:#181610;border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:2rem;max-width:420px;width:100%';
+  box.onclick = e => e.stopPropagation();
+  box.innerHTML = \`
+    <div style="display:flex;justify-content:space-between;margin-bottom:1.5rem">
+      <span style="font-size:1.1rem;font-weight:700;color:#f5ede0">供应商入驻申请</span>
+      <button onclick="this.closest('div[style]').remove()" style="background:none;border:none;color:rgba(245,237,224,0.4);font-size:1.3rem;cursor:pointer">x</button>
+    </div>
+    <input type="text" id="pName" placeholder="企业/品牌名称" value="\${currentUser?.name||''}" style="width:100%;padding:0.7rem 1rem;margin-bottom:0.75rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:'Noto Serif SC',serif;font-size:0.8rem;outline:none">
+    <input type="email" id="pEmail" placeholder="联系邮箱" value="\${currentUser?.email||''}" style="width:100%;padding:0.7rem 1rem;margin-bottom:0.75rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:'Noto Serif SC',serif;font-size:0.8rem;outline:none">
+    <select id="pService" style="width:100%;padding:0.7rem 1rem;margin-bottom:1rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:'Noto Serif SC',serif;font-size:0.8rem;outline:none">
+      <option value="hotel">住宿 / 民宿</option>
+      <option value="guide">导览 / 旅行服务</option>
+      <option value="cafe">咖啡馆 / 书店</option>
+      <option value="food">餐饮 / 特色美食</option>
+      <option value="other">其他文旅服务</option>
+    </select>
+    <button onclick="doPartnerApply()" style="width:100%;padding:0.8rem;background:var(--gold);border:none;border-radius:2px;color:#0d0c0a;font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.25em;cursor:pointer;text-transform:uppercase">提交入驻申请</button>
+    <p style="font-size:0.55rem;color:rgba(245,237,224,0.3);text-align:center;margin-top:0.75rem">审核通过后我们将与你联系</p>
+  \`;
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+async function doPartnerApply() {
+  const name = document.getElementById('pName').value.trim();
+  const email = document.getElementById('pEmail').value.trim();
+  const service = document.getElementById('pService').value;
+  if (!name || !email) { alert('请填完所有字段'); return; }
+  try {
+    const res = await fetch(API + '/api/partner/apply', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name, email, service}) });
+    const data = await res.json();
+    alert(data.message || '申请已提交');
+    if (data.status === 'applied') { document.querySelector('div[style*=\\'z-index:1000\\']')?.remove(); }
+  } catch(e) { alert('提交失败，请稍后再试'); }
+}
+
+// ── Nav User ──
+function updateNavUser() {
+  const cta = document.querySelector('.nav-cta');
+  if (!cta) return;
+  if (currentUser) {
+    cta.textContent = currentUser.name + ' · ' + (currentUser.rank || 'C') + '级';
+    cta.href = '#';
+    cta.onclick = (e) => { e.preventDefault(); showProfile(); };
+  } else {
+    cta.textContent = '登录 / 注册';
+    cta.href = '#';
+    cta.onclick = (e) => { e.preventDefault(); showAuth(); };
+  }
+}
+function showProfile() {
+  if (!currentUser) { showAuth(); return; }
+  alert('巡礼者: ' + currentUser.name + '\n等级: ' + (currentUser.rank || 'C') + '\n邮箱: ' + currentUser.email + '\n\n更多个人中心功能即将上线');
+}
+
+// ── Fix nav CTA ──
+setTimeout(() => {
+  const cta = document.querySelector('.nav-cta');
+  if (cta) { cta.href = '#'; cta.onclick = (e) => { e.preventDefault(); currentUser ? showProfile() : showAuth(); }; }
+}, 100);
 
 // ── Nav click fix ──
 document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -545,23 +686,86 @@ async function handleRequest(request, env) {
     });
   }
 
-  // D1: User get
-  if (path.startsWith('/api/user/') && method === 'GET' && !path.includes('/visit')) {
-    const id = path.split('/').pop();
+  // ── Auth: Register ──
+  if (path === '/api/auth/register' && method === 'POST') {
+    const body = await getBody(request);
+    if (!body || !body.username || !body.email) return json({ error: 'Need username and email' }, 400);
     if (!env.DB) return json({ error: 'D1 not configured' }, 503);
-    const { results } = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).all();
-    if (results.length === 0) return json({ error: 'User not found' }, 404);
-    return json(results[0]);
+    const id = 'user_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const token = 'tok_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+    try {
+      await env.DB.prepare("INSERT INTO users (id, name, email, rank, created_at) VALUES (?, ?, ?, 'C', datetime('now'))").bind(id, body.username, body.email).run();
+      return json({ id, name: body.username, email: body.email, token, rank: 'C' });
+    } catch (e) {
+      if (e.message?.includes('UNIQUE')) return json({ error: 'Email already registered' }, 409);
+      return json({ error: e.message }, 500);
+    }
   }
 
-  // D1: User visit
-  if (path.startsWith('/api/user/') && path.endsWith('/visit') && method === 'POST') {
-    const id = path.split('/')[3];
+  // ── Auth: Login ──
+  if (path === '/api/auth/login' && method === 'POST') {
     const body = await getBody(request);
+    if (!body || !body.email) return json({ error: 'Need email' }, 400);
     if (!env.DB) return json({ error: 'D1 not configured' }, 503);
-    await env.DB.prepare("INSERT OR REPLACE INTO visits (user_id, site_id, visited_at) VALUES (?, ?, datetime('now'))")
-      .bind(id, body?.siteId).run();
-    return json({ status: 'visited', user: id, site: body?.siteId });
+    const { results } = await env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(body.email).all();
+    if (results.length === 0) return json({ error: 'User not found. Please register first.' }, 404);
+    const u = results[0];
+    return json({ id: u.id, name: u.name, email: u.email, rank: u.rank });
+  }
+
+  // ── User Profile ──
+  if (path === '/api/user/profile' && method === 'POST') {
+    const body = await getBody(request);
+    if (!body || !body.id) return json({ error: 'Need user id' }, 400);
+    if (!env.DB) return json({ error: 'D1 not configured' }, 503);
+    const { results: userRows } = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(body.id).all();
+    if (userRows.length === 0) return json({ error: 'User not found' }, 404);
+    const u = userRows[0];
+    const { results: visitRows } = await env.DB.prepare('SELECT COUNT(*) as c FROM visits WHERE user_id = ?').bind(body.id).all();
+    const { results: badgeRows } = await env.DB.prepare('SELECT badge_type FROM badges WHERE user_id = ?').bind(body.id).all();
+    return json({ ...u, visits: visitRows[0]?.c || 0, badges: badgeRows.map(b => b.badge_type) });
+  }
+
+  // ── Design.md Subscribe ──
+  if (path === '/api/subscribe' && method === 'POST') {
+    const body = await getBody(request);
+    if (!body || !body.userId) return json({ error: 'Need userId' }, 400);
+    if (!env.DB) return json({ error: 'D1 not configured' }, 503);
+    await env.DB.prepare("UPDATE users SET rank = 'B', updated_at = datetime('now') WHERE id = ?").bind(body.userId).run();
+    await env.DB.prepare("INSERT INTO badges (user_id, badge_type) VALUES (?, 'design_md')").bind(body.userId).run().catch(() => {});
+    return json({ status: 'subscribed', rank: 'B', message: 'Design.md 订阅成功！你现在可以创作卡片了。' });
+  }
+
+  // ── User Visit ──
+  if (path === '/api/user/visit' && method === 'POST') {
+    const body = await getBody(request);
+    if (!body || !body.userId || !body.siteId) return json({ error: 'Need userId and siteId' }, 400);
+    if (!env.DB) return json({ error: 'D1 not configured' }, 503);
+    await env.DB.prepare("INSERT INTO visits (user_id, site_id, visited_at) VALUES (?, ?, datetime('now'))").bind(body.userId, body.siteId).run();
+    const { results } = await env.DB.prepare('SELECT COUNT(*) as c FROM visits WHERE user_id = ?').bind(body.userId).all();
+    return json({ status: 'visited', totalVisits: results[0]?.c || 1 });
+  }
+
+  // ── Partner Apply ──
+  if (path === '/api/partner/apply' && method === 'POST') {
+    const body = await getBody(request);
+    if (!body || !body.name || !body.email || !body.service) return json({ error: 'Need name, email, service' }, 400);
+    if (!env.DB) return json({ error: 'D1 not configured' }, 503);
+    const { results } = await env.DB.prepare("INSERT INTO partner_claims (partner_name, partner_email, site_id, service_type, status, claimed_at) VALUES (?, ?, ?, ?, 'pending', datetime('now')) RETURNING id")
+      .bind(body.name, body.email, body.siteId || 'general', body.service).all();
+    return json({ status: 'applied', id: results[0]?.id, message: '申请已提交，平台将在3个工作日内审核。' });
+  }
+
+  // ── Creator Stats ──
+  if (path === '/api/creator/stats' && method === 'POST') {
+    const body = await getBody(request);
+    const userId = body?.userId || 'all';
+    if (!env.DB) return json({ error: 'D1 not configured' }, 503);
+    const { results: sites } = await env.DB.prepare('SELECT site_id, COUNT(*) as c FROM visits GROUP BY site_id ORDER BY c DESC LIMIT 5').all();
+    const { results: totalVisits } = await env.DB.prepare('SELECT COUNT(*) as c FROM visits').all();
+    const { results: totalUsers } = await env.DB.prepare('SELECT COUNT(*) as c FROM users').all();
+    const { results: totalPartners } = await env.DB.prepare('SELECT COUNT(*) as c FROM partner_claims').all();
+    return json({ totalVisits: totalVisits[0]?.c || 0, totalUsers: totalUsers[0]?.c || 0, totalPartners: totalPartners[0]?.c || 0, topSites: sites });
   }
 
   return json({ error: 'Not found' }, 404);

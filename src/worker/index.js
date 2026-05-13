@@ -162,23 +162,86 @@ async function handleRequest(request, env) {
     });
   }
 
-  // D1: User get
-  if (path.startsWith('/api/user/') && method === 'GET' && !path.includes('/visit')) {
-    const id = path.split('/').pop();
+  // ── Auth: Register ──
+  if (path === '/api/auth/register' && method === 'POST') {
+    const body = await getBody(request);
+    if (!body || !body.username || !body.email) return json({ error: 'Need username and email' }, 400);
     if (!env.DB) return json({ error: 'D1 not configured' }, 503);
-    const { results } = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).all();
-    if (results.length === 0) return json({ error: 'User not found' }, 404);
-    return json(results[0]);
+    const id = 'user_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const token = 'tok_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+    try {
+      await env.DB.prepare("INSERT INTO users (id, name, email, rank, created_at) VALUES (?, ?, ?, 'C', datetime('now'))").bind(id, body.username, body.email).run();
+      return json({ id, name: body.username, email: body.email, token, rank: 'C' });
+    } catch (e) {
+      if (e.message?.includes('UNIQUE')) return json({ error: 'Email already registered' }, 409);
+      return json({ error: e.message }, 500);
+    }
   }
 
-  // D1: User visit
-  if (path.startsWith('/api/user/') && path.endsWith('/visit') && method === 'POST') {
-    const id = path.split('/')[3];
+  // ── Auth: Login ──
+  if (path === '/api/auth/login' && method === 'POST') {
     const body = await getBody(request);
+    if (!body || !body.email) return json({ error: 'Need email' }, 400);
     if (!env.DB) return json({ error: 'D1 not configured' }, 503);
-    await env.DB.prepare("INSERT OR REPLACE INTO visits (user_id, site_id, visited_at) VALUES (?, ?, datetime('now'))")
-      .bind(id, body?.siteId).run();
-    return json({ status: 'visited', user: id, site: body?.siteId });
+    const { results } = await env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(body.email).all();
+    if (results.length === 0) return json({ error: 'User not found. Please register first.' }, 404);
+    const u = results[0];
+    return json({ id: u.id, name: u.name, email: u.email, rank: u.rank });
+  }
+
+  // ── User Profile ──
+  if (path === '/api/user/profile' && method === 'POST') {
+    const body = await getBody(request);
+    if (!body || !body.id) return json({ error: 'Need user id' }, 400);
+    if (!env.DB) return json({ error: 'D1 not configured' }, 503);
+    const { results: userRows } = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(body.id).all();
+    if (userRows.length === 0) return json({ error: 'User not found' }, 404);
+    const u = userRows[0];
+    const { results: visitRows } = await env.DB.prepare('SELECT COUNT(*) as c FROM visits WHERE user_id = ?').bind(body.id).all();
+    const { results: badgeRows } = await env.DB.prepare('SELECT badge_type FROM badges WHERE user_id = ?').bind(body.id).all();
+    return json({ ...u, visits: visitRows[0]?.c || 0, badges: badgeRows.map(b => b.badge_type) });
+  }
+
+  // ── Design.md Subscribe ──
+  if (path === '/api/subscribe' && method === 'POST') {
+    const body = await getBody(request);
+    if (!body || !body.userId) return json({ error: 'Need userId' }, 400);
+    if (!env.DB) return json({ error: 'D1 not configured' }, 503);
+    await env.DB.prepare("UPDATE users SET rank = 'B', updated_at = datetime('now') WHERE id = ?").bind(body.userId).run();
+    await env.DB.prepare("INSERT INTO badges (user_id, badge_type) VALUES (?, 'design_md')").bind(body.userId).run().catch(() => {});
+    return json({ status: 'subscribed', rank: 'B', message: 'Design.md 订阅成功！你现在可以创作卡片了。' });
+  }
+
+  // ── User Visit ──
+  if (path === '/api/user/visit' && method === 'POST') {
+    const body = await getBody(request);
+    if (!body || !body.userId || !body.siteId) return json({ error: 'Need userId and siteId' }, 400);
+    if (!env.DB) return json({ error: 'D1 not configured' }, 503);
+    await env.DB.prepare("INSERT INTO visits (user_id, site_id, visited_at) VALUES (?, ?, datetime('now'))").bind(body.userId, body.siteId).run();
+    const { results } = await env.DB.prepare('SELECT COUNT(*) as c FROM visits WHERE user_id = ?').bind(body.userId).all();
+    return json({ status: 'visited', totalVisits: results[0]?.c || 1 });
+  }
+
+  // ── Partner Apply ──
+  if (path === '/api/partner/apply' && method === 'POST') {
+    const body = await getBody(request);
+    if (!body || !body.name || !body.email || !body.service) return json({ error: 'Need name, email, service' }, 400);
+    if (!env.DB) return json({ error: 'D1 not configured' }, 503);
+    const { results } = await env.DB.prepare("INSERT INTO partner_claims (partner_name, partner_email, site_id, service_type, status, claimed_at) VALUES (?, ?, ?, ?, 'pending', datetime('now')) RETURNING id")
+      .bind(body.name, body.email, body.siteId || 'general', body.service).all();
+    return json({ status: 'applied', id: results[0]?.id, message: '申请已提交，平台将在3个工作日内审核。' });
+  }
+
+  // ── Creator Stats ──
+  if (path === '/api/creator/stats' && method === 'POST') {
+    const body = await getBody(request);
+    const userId = body?.userId || 'all';
+    if (!env.DB) return json({ error: 'D1 not configured' }, 503);
+    const { results: sites } = await env.DB.prepare('SELECT site_id, COUNT(*) as c FROM visits GROUP BY site_id ORDER BY c DESC LIMIT 5').all();
+    const { results: totalVisits } = await env.DB.prepare('SELECT COUNT(*) as c FROM visits').all();
+    const { results: totalUsers } = await env.DB.prepare('SELECT COUNT(*) as c FROM users').all();
+    const { results: totalPartners } = await env.DB.prepare('SELECT COUNT(*) as c FROM partner_claims').all();
+    return json({ totalVisits: totalVisits[0]?.c || 0, totalUsers: totalUsers[0]?.c || 0, totalPartners: totalPartners[0]?.c || 0, topSites: sites });
   }
 
   return json({ error: 'Not found' }, 404);
