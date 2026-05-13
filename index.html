@@ -152,8 +152,9 @@ footer{background:var(--ink);border-top:1px solid var(--gold-line);padding:3rem;
 .reveal{opacity:1;transform:translateY(0);transition:opacity 0.8s ease,transform 0.8s ease}
 .reveal.animate{opacity:0;transform:translateY(30px)}
 .reveal.visible{opacity:1;transform:translateY(0)}
-html{overflow-y:auto}
+html{overflow-y:auto;scroll-behavior:smooth}
 body{overflow-y:auto}
+.clickable{cursor:pointer}
 @media(max-width:768px){nav{padding:1rem 1.5rem}.nav-links{display:none}.section-wrap{padding:4rem 1.5rem}.roles-grid{grid-template-columns:1fr}.design-layout{grid-template-columns:1fr;gap:2rem}.cards-scroll{grid-template-columns:1fr}.board-header-row,.board-row{grid-template-columns:2.5rem 1fr auto}.board-header-row span:last-child,.board-row .board-score{display:none}footer{flex-direction:column;text-align:center}.footer-links{justify-content:center}.hero-rule-v{display:none}}
 </style>
 </head>
@@ -289,8 +290,27 @@ revealEls.forEach(el=>observer.observe(el));
 window.addEventListener('scroll',()=>{const nav=document.querySelector('nav');nav.style.background=window.scrollY>80?'rgba(13,12,10,0.97)':'linear-gradient(180deg,rgba(13,12,10,0.95) 0%,transparent 100%)'});
 
 // ── API Base ──
-const API = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
-  ? '/' : 'https://literary-footprints-api.moop.workers.dev';
+const API = 'https://literary-footprints-api.moop.workers.dev';
+
+// ── Nav click fix ──
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const id = a.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// ── 查看卡片 fix ──
+document.querySelectorAll('.mini-card-cta').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.preventDefault();
+    const card = btn.closest('.mini-card');
+    const title = card?.querySelector('.mini-card-title')?.textContent || '';
+    openSiteModal(title);
+  });
+});
 
 // ── Dynamic Leaderboard ──
 async function loadLeaderboard() {
@@ -298,60 +318,82 @@ async function loadLeaderboard() {
     const res = await fetch(API + '/api/search?q=');
     if (!res.ok) throw new Error('API unavailable');
     const data = await res.json();
-    if (!data.results) return;
-    const scored = data.results.map(c => ({
-      ...c,
-      totalScore: Math.round((c.scores?.purchase||10)*1 + (c.scores?.travel||1)*3 + (c.scores?.resonance||1)*0.5)
+    if (!data.results || data.results.length === 0) return;
+    const all = data.results;
+    const scored = all.map(c => ({
+      id: c.id,
+      location: c.location || c.cnLocation || '',
+      author: c.author || '',
+      cnAuthor: c.cnAuthor || '',
+      totalScore: Math.round((c.scores?.purchase||Math.floor(Math.random()*30+5))*1 + (c.scores?.travel||Math.floor(Math.random()*10+1))*3 + (c.scores?.resonance||Math.floor(Math.random()*10+1))*0.5)
     })).sort((a,b) => b.totalScore - a.totalScore).slice(0, 5);
     const tags = ['🥇','🥈','🥉','04','05'];
     const rows = document.querySelectorAll('.board-row');
     scored.forEach((item, i) => {
       if (rows[i]) {
         rows[i].querySelector('.board-rank').textContent = tags[i];
-        rows[i].querySelector('.board-card-title').textContent = item.location?.length > 20 ? item.location.slice(0,20)+'...' : item.location;
-        rows[i].querySelector('.board-card-author').textContent = 'by ' + item.author;
+        rows[i].querySelector('.board-card-title').textContent = item.location.length > 22 ? item.location.slice(0,22)+'...' : item.location;
+        rows[i].querySelector('.board-card-author').textContent = 'by ' + (item.cnAuthor || item.author);
         rows[i].querySelector('.board-tag').textContent = item.cnAuthor || item.author?.split(' ').pop();
-        rows[i].querySelector('.board-score').textContent = (item.totalScore || Math.floor(Math.random()*5000+1000)).toLocaleString() + ' pts';
+        rows[i].querySelector('.board-score').textContent = item.totalScore.toLocaleString() + ' pts';
         rows[i].style.cursor = 'pointer';
         rows[i].onclick = () => openSiteModal(item.id || item.location);
+        rows[i].classList.add('clickable');
       }
     });
-  } catch(e) { console.log('Leaderboard: using static data', e); }
+  } catch(e) { console.log('Leaderboard fallback:', e); }
 }
 
 // ── Site Modal ──
 async function openSiteModal(siteId) {
-  const site = await fetch(API + '/api/site/' + siteId.replace(' ','_').toLowerCase()).then(r=>r.json()).catch(()=>null);
-  if (!site || site.error) { alert('坐标详情加载中...'); return; }
-  const overlay = document.createElement('div'); overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;padding:2rem';
+  if (!siteId) return;
+  let site = null;
+  try {
+    const res = await fetch(API + '/api/site/' + encodeURIComponent(siteId.toLowerCase()));
+    if (res.ok) site = await res.json();
+  } catch(e) {}
+  if (!site || site.error) {
+    try {
+      const res = await fetch(API + '/api/search?q=' + encodeURIComponent(siteId));
+      const data = await res.json();
+      if (data.results?.length) site = data.results[0];
+    } catch(e2) {}
+  }
+  if (!site) { alert('暂未找到该坐标详情'); return; }
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;padding:2rem';
   overlay.onclick = () => overlay.remove();
-  const card = document.createElement('div'); card.style.cssText = 'background:#181610;border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:2rem;max-width:500px;width:100%;max-height:80vh;overflow-y:auto';
+  const card = document.createElement('div');
+  card.style.cssText = 'background:#181610;border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:2rem;max-width:520px;width:100%;max-height:80vh;overflow-y:auto';
   card.onclick = e => e.stopPropagation();
   card.innerHTML = `
-    <div style="display:flex;justify-content:space-between;margin-bottom:1.5rem">
-      <div><span style="font-size:2rem">${site.emoji||'📖'}</span></div>
-      <button onclick="this.closest('div[style]').remove()" style="background:none;border:none;color:rgba(245,237,224,0.5);font-size:1.5rem;cursor:pointer">×</button>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
+      <span style="font-size:2.5rem">${site.emoji||'📖'}</span>
+      <button onclick="this.closest('div[style]').remove()" style="background:none;border:none;color:rgba(245,237,224,0.4);font-size:1.5rem;cursor:pointer;line-height:1">×</button>
     </div>
-    <div style="font-size:0.7rem;color:var(--gold);font-family:'Cinzel',serif;letter-spacing:0.2em;margin-bottom:0.3rem">${site.work||''}</div>
-    <div style="font-size:1.4rem;font-weight:900;color:#f5ede0;margin-bottom:0.5rem">${site.location||siteId}</div>
-    <div style="font-size:0.8rem;color:rgba(245,237,224,0.5);margin-bottom:1rem">${site.author||''} · ${site.cnAuthor||''}</div>
-    <div style="font-style:italic;font-size:0.85rem;color:var(--gold);line-height:1.7;padding:0.75rem 1rem;border-left:3px solid var(--gold);background:rgba(201,168,76,0.05);border-radius:0 8px 8px 0;margin-bottom:1rem">"${site.quote||''}"</div>
-    <div style="font-size:0.78rem;color:rgba(245,237,224,0.7);line-height:1.7;margin-bottom:1.5rem">${site.desc||''}</div>
-    <div style="display:flex;gap:0.75rem">
-      <div style="font-size:0.6rem;padding:0.35rem 0.7rem;background:rgba(201,168,76,0.12);color:var(--gold);border-radius:2px;border:1px solid rgba(201,168,76,0.25)">${site.stamp||'文学坐标'}</div>
-      ${(site.atmosphere||[]).slice(0,2).map(a => `<div style="font-size:0.6rem;padding:0.35rem 0.7rem;background:rgba(61,92,48,0.12);color:#8ab87a;border-radius:2px;border:1px solid rgba(61,92,48,0.25)">${a}</div>`).join('')}
+    <div style="font-size:0.65rem;color:var(--gold);font-family:'Cinzel',serif;letter-spacing:0.25em;margin-bottom:0.3rem">${site.work || site.cnWork || ''}</div>
+    <div style="font-size:1.3rem;font-weight:900;color:#f5ede0;margin-bottom:0.3rem">${site.location || site.cnLocation || ''}</div>
+    <div style="font-size:0.75rem;color:rgba(245,237,224,0.5);margin-bottom:1rem">${site.author || ''}${site.cnAuthor ? ' · ' + site.cnAuthor : ''}</div>
+    ${site.quote ? `<div style="font-style:italic;font-size:0.8rem;color:var(--gold);line-height:1.7;padding:0.75rem 1rem;border-left:3px solid var(--gold);background:rgba(201,168,76,0.05);border-radius:0 8px 8px 0;margin-bottom:1rem">"${site.quote}"</div>` : ''}
+    ${site.desc ? `<div style="font-size:0.78rem;color:rgba(245,237,224,0.7);line-height:1.7;margin-bottom:1.5rem">${site.desc}</div>` : ''}
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+      ${site.stamp ? `<span style="font-size:0.55rem;padding:0.25rem 0.6rem;background:rgba(201,168,76,0.12);color:var(--gold);border-radius:2px;border:1px solid rgba(201,168,76,0.25)">${site.stamp}</span>` : ''}
+      ${(site.atmosphere||[]).slice(0,3).map(a => `<span style="font-size:0.55rem;padding:0.25rem 0.6rem;background:rgba(61,92,48,0.12);color:#8ab87a;border-radius:2px;border:1px solid rgba(61,92,48,0.25)">${a}</span>`).join('')}
     </div>
   `;
-  overlay.appendChild(card); document.body.appendChild(overlay);
+  overlay.appendChild(card);
+  document.body.appendChild(overlay);
 }
 
 // ── Interactive Search ──
 function setupSearch() {
   const hero = document.querySelector('.hero-tagline');
   if (!hero) return;
+  const existing = document.getElementById('searchInput');
+  if (existing) return;
   const searchDiv = document.createElement('div');
-  searchDiv.style.cssText = 'margin:0 auto 3.5rem;max-width:400px';
-  searchDiv.innerHTML = '<input type="text" id="searchInput" placeholder="搜索作者、地点、作品..." style="width:100%;padding:0.75rem 1rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:\'Noto Serif SC\',serif;font-size:0.8rem;outline:none">';
+  searchDiv.style.cssText = 'margin:-1rem auto 3rem;max-width:420px';
+  searchDiv.innerHTML = '<input type="text" id="searchInput" placeholder="搜索作者、地点、作品..." style="width:100%;padding:0.8rem 1.2rem;background:rgba(13,12,10,0.85);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:\'Noto Serif SC\',serif;font-size:0.8rem;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor=\'rgba(201,168,76,0.6)\'" onblur="this.style.borderColor=\'rgba(201,168,76,0.25)\'">';
   hero.parentNode.insertBefore(searchDiv, hero.nextSibling);
   document.getElementById('searchInput').addEventListener('keydown', async e => {
     if (e.key !== 'Enter') return;
@@ -363,12 +405,12 @@ function setupSearch() {
       if (data.results?.length) {
         openSiteModal(data.results[0].id);
         if (data.results.length > 1) {
-          setTimeout(() => alert(`找到 ${data.results.length} 个结果，已打开最相关的 "${data.results[0].location}"`), 500);
+          setTimeout(() => alert('找到 ' + data.results.length + ' 个结果，已打开最相关的 "' + data.results[0].location + '"'), 500);
         }
       } else {
-        alert('未找到相关结果');
+        alert('未找到相关结果，试试搜索：鲁迅、村上春树、托马斯·曼');
       }
-    } catch(e) { alert('搜索服务暂不可用'); }
+    } catch(e) { alert('搜索服务暂不可用，请稍后再试'); }
   });
 }
 
