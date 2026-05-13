@@ -1,7 +1,7 @@
 # ============================================
 # Worker configuration (for API deployment)
 # ============================================
-name = "literary-footprints-api"
+name = "book-place-travel"
 main = "src/worker/index.full.js"
 compatibility_date = "2025-04-01"
 compatibility_flags = ["nodejs_compat"]
@@ -10,7 +10,7 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "literary-footprints-db"
-database_id = ""
+database_id = "3d7abd82-cdfb-4792-9c3d-6963b05bd1ff"
 
 # R2 Storage
 [[r2_buckets]]
