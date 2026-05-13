@@ -287,34 +287,28 @@ const API = 'https://literary-footprints-api.moop.workers.dev';
 let currentUser = JSON.parse(localStorage.getItem('lf_user') || 'null');
 const DIALOG_STYLES = ['color:#f5ede0;background:rgba(13,12,10,0.9);border:2px solid rgba(201,168,76,0.4);border-radius:8px;padding:1rem;font-family:\'Noto Serif SC\',serif;max-width:90%', ''];
 
-// ── Auth Modal ──
+// ── Auth Modal (no template literals) ──
 function showAuth() {
-  const overlay = document.createElement('div');
+  var overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;padding:2rem';
-  overlay.onclick = () => overlay.remove();
-  const box = document.createElement('div');
+  overlay.onclick = function(){overlay.remove()};
+  var box = document.createElement('div');
   box.style.cssText = 'background:#181610;border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:2rem;max-width:400px;width:100%';
-  box.onclick = e => e.stopPropagation();
-  box.innerHTML = `
-    <div style="display:flex;justify-content:space-between;margin-bottom:1.5rem">
-      <span style="font-size:1.1rem;font-weight:700;color:#f5ede0">登录 / 注册</span>
-      <button onclick="this.closest('div[style]').remove()" style="background:none;border:none;color:rgba(245,237,224,0.4);font-size:1.3rem;cursor:pointer">x</button>
-    </div>
-    <div id="authForm">
-      <p style="font-size:0.8rem;color:rgba(245,237,224,0.6);margin-bottom:1.2rem">输入邮箱和昵称即可加入文迹</p>
-      <input type="text" id="authName" placeholder="昵称" style="width:100%;padding:0.7rem 1rem;margin-bottom:0.75rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:'Noto Serif SC',serif;font-size:0.8rem;outline:none">
-      <input type="email" id="authEmail" placeholder="邮箱" style="width:100%;padding:0.7rem 1rem;margin-bottom:1.2rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:'Noto Serif SC',serif;font-size:0.8rem;outline:none">
-      <button onclick="doRegister()" style="width:100%;padding:0.8rem;background:linear-gradient(135deg,#e8d5a3,#c9a84c);border:none;border-radius:2px;color:#0d0c0a;font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.25em;cursor:pointer;text-transform:uppercase;margin-bottom:0.5rem">注册 / 登录</button>
-      <p style="font-size:0.6rem;color:rgba(245,237,224,0.3);text-align:center">已有账号？输入相同邮箱即可登录</p>
-    </div>
-    <div id="authSuccess" style="display:none;text-align:center;padding:1rem 0">
-      <div style="font-size:2rem;margin-bottom:0.75rem">🎉</div>
-      <p style="font-size:0.9rem;color:#c9a84c;margin-bottom:0.5rem" id="authGreeting">欢迎加入文迹！</p>
-      <p style="font-size:0.75rem;color:rgba(245,237,224,0.6)" id="authStatus"></p>
-    </div>
-  `;
-  overlay.appendChild(box);
-  document.body.appendChild(overlay);
+  box.onclick = function(e){e.stopPropagation()};
+  box.innerHTML = '<div style="display:flex;justify-content:space-between;margin-bottom:1.5rem">'
+    + '<span style="font-size:1.1rem;font-weight:700;color:#f5ede0">登录 / 注册</span>'
+    + '<button onclick="this.parentNode.parentNode.parentNode.remove()" style="background:none;border:none;color:rgba(245,237,224,0.4);font-size:1.3rem;cursor:pointer">x</button></div>'
+    + '<div id="authForm">'
+    + '<p style="font-size:0.8rem;color:rgba(245,237,224,0.6);margin-bottom:1.2rem">输入邮箱和昵称即可加入文迹</p>'
+    + '<input type="text" id="authName" placeholder="昵称" style="width:100%;padding:0.7rem 1rem;margin-bottom:0.75rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:\'Noto Serif SC\',serif;font-size:0.8rem;outline:none">'
+    + '<input type="email" id="authEmail" placeholder="邮箱" style="width:100%;padding:0.7rem 1rem;margin-bottom:1.2rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:\'Noto Serif SC\',serif;font-size:0.8rem;outline:none">'
+    + '<button onclick="doRegister()" style="width:100%;padding:0.8rem;background:linear-gradient(135deg,#e8d5a3,#c9a84c);border:none;border-radius:2px;color:#0d0c0a;font-family:\'Cinzel\',serif;font-size:0.65rem;letter-spacing:0.25em;cursor:pointer;text-transform:uppercase;margin-bottom:0.5rem">注册 / 登录</button>'
+    + '<p style="font-size:0.6rem;color:rgba(245,237,224,0.3);text-align:center">已有账号？输入相同邮箱即可登录</p></div>'
+    + '<div id="authSuccess" style="display:none;text-align:center;padding:1rem 0">'
+    + '<div style="font-size:2rem;margin-bottom:0.75rem">🎉</div>'
+    + '<p style="font-size:0.9rem;color:#c9a84c;margin-bottom:0.5rem" id="authGreeting">欢迎加入文迹！</p>'
+    + '<p style="font-size:0.75rem;color:rgba(245,237,224,0.6)" id="authStatus"></p></div>';
+  overlay.appendChild(box); document.body.appendChild(overlay);
 }
 async function doRegister() {
   const name = document.getElementById('authName').value.trim();
@@ -362,29 +356,25 @@ async function doSubscribe() {
 // ── Partner Apply ──
 function showPartnerForm() {
   if (!currentUser) { showAuth(); return; }
-  const overlay = document.createElement('div');
+  var overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;padding:2rem';
-  overlay.onclick = () => overlay.remove();
-  const box = document.createElement('div');
+  overlay.onclick = function(){overlay.remove()};
+  var box = document.createElement('div');
   box.style.cssText = 'background:#181610;border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:2rem;max-width:420px;width:100%';
-  box.onclick = e => e.stopPropagation();
-  box.innerHTML = `
-    <div style="display:flex;justify-content:space-between;margin-bottom:1.5rem">
-      <span style="font-size:1.1rem;font-weight:700;color:#f5ede0">供应商入驻申请</span>
-      <button onclick="this.closest('div[style]').remove()" style="background:none;border:none;color:rgba(245,237,224,0.4);font-size:1.3rem;cursor:pointer">x</button>
-    </div>
-    <input type="text" id="pName" placeholder="企业/品牌名称" value="${currentUser?.name||''}" style="width:100%;padding:0.7rem 1rem;margin-bottom:0.75rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:'Noto Serif SC',serif;font-size:0.8rem;outline:none">
-    <input type="email" id="pEmail" placeholder="联系邮箱" value="${currentUser?.email||''}" style="width:100%;padding:0.7rem 1rem;margin-bottom:0.75rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:'Noto Serif SC',serif;font-size:0.8rem;outline:none">
-    <select id="pService" style="width:100%;padding:0.7rem 1rem;margin-bottom:1rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:'Noto Serif SC',serif;font-size:0.8rem;outline:none">
-      <option value="hotel">住宿 / 民宿</option>
-      <option value="guide">导览 / 旅行服务</option>
-      <option value="cafe">咖啡馆 / 书店</option>
-      <option value="food">餐饮 / 特色美食</option>
-      <option value="other">其他文旅服务</option>
-    </select>
-    <button onclick="doPartnerApply()" style="width:100%;padding:0.8rem;background:var(--gold);border:none;border-radius:2px;color:#0d0c0a;font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.25em;cursor:pointer;text-transform:uppercase">提交入驻申请</button>
-    <p style="font-size:0.55rem;color:rgba(245,237,224,0.3);text-align:center;margin-top:0.75rem">审核通过后我们将与你联系</p>
-  `;
+  box.onclick = function(e){e.stopPropagation()};
+  var uname = (currentUser && currentUser.name) || '';
+  var uemail = (currentUser && currentUser.email) || '';
+  box.innerHTML = '<div style="display:flex;justify-content:space-between;margin-bottom:1.5rem">'
+    + '<span style="font-size:1.1rem;font-weight:700;color:#f5ede0">供应商入驻申请</span>'
+    + '<button onclick="this.parentNode.parentNode.parentNode.remove()" style="background:none;border:none;color:rgba(245,237,224,0.4);font-size:1.3rem;cursor:pointer">x</button></div>'
+    + '<input type="text" id="pName" placeholder="企业/品牌名称" value="' + uname + '" style="width:100%;padding:0.7rem 1rem;margin-bottom:0.75rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:\'Noto Serif SC\',serif;font-size:0.8rem;outline:none">'
+    + '<input type="email" id="pEmail" placeholder="联系邮箱" value="' + uemail + '" style="width:100%;padding:0.7rem 1rem;margin-bottom:0.75rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:\'Noto Serif SC\',serif;font-size:0.8rem;outline:none">'
+    + '<select id="pService" style="width:100%;padding:0.7rem 1rem;margin-bottom:1rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:\'Noto Serif SC\',serif;font-size:0.8rem;outline:none">'
+    + '<option value="hotel">住宿 / 民宿</option><option value="guide">导览 / 旅行服务</option>'
+    + '<option value="cafe">咖啡馆 / 书店</option><option value="food">餐饮 / 特色美食</option>'
+    + '<option value="other">其他文旅服务</option></select>'
+    + '<button onclick="doPartnerApply()" style="width:100%;padding:0.8rem;background:#c9a84c;border:none;border-radius:2px;color:#0d0c0a;font-family:\'Cinzel\',serif;font-size:0.65rem;letter-spacing:0.25em;cursor:pointer;text-transform:uppercase">提交入驻申请</button>'
+    + '<p style="font-size:0.55rem;color:rgba(245,237,224,0.3);text-align:center;margin-top:0.75rem">审核通过后我们将与你联系</p>';
   overlay.appendChild(box);
   document.body.appendChild(overlay);
 }
@@ -479,43 +469,52 @@ async function loadLeaderboard() {
   } catch(e) { console.log('Leaderboard fallback:', e); }
 }
 
-// ── Site Modal ──
+// ── Site Modal (no template literals) ──
 async function openSiteModal(siteId) {
   if (!siteId) return;
-  let site = null;
+  var site = null;
   try {
-    const res = await fetch(API + '/api/site/' + encodeURIComponent(siteId.toLowerCase()));
+    var res = await fetch(API + '/api/site/' + encodeURIComponent(siteId.toLowerCase()));
     if (res.ok) site = await res.json();
   } catch(e) {}
   if (!site || site.error) {
     try {
-      const res = await fetch(API + '/api/search?q=' + encodeURIComponent(siteId));
-      const data = await res.json();
-      if (data.results?.length) site = data.results[0];
+      var res2 = await fetch(API + '/api/search?q=' + encodeURIComponent(siteId));
+      var data = await res2.json();
+      if (data.results && data.results.length > 0) site = data.results[0];
     } catch(e2) {}
   }
   if (!site) { alert('暂未找到该坐标详情'); return; }
-  const overlay = document.createElement('div');
+  var overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;padding:2rem';
-  overlay.onclick = () => overlay.remove();
-  const card = document.createElement('div');
+  overlay.onclick = function(){overlay.remove()};
+  var card = document.createElement('div');
   card.style.cssText = 'background:#181610;border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:2rem;max-width:520px;width:100%;max-height:80vh;overflow-y:auto';
-  card.onclick = e => e.stopPropagation();
-  card.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
-      <span style="font-size:2.5rem">${site.emoji||'📖'}</span>
-      <button onclick="this.closest('div[style]').remove()" style="background:none;border:none;color:rgba(245,237,224,0.4);font-size:1.5rem;cursor:pointer;line-height:1">×</button>
-    </div>
-    <div style="font-size:0.65rem;color:var(--gold);font-family:'Cinzel',serif;letter-spacing:0.25em;margin-bottom:0.3rem">${site.work || site.cnWork || ''}</div>
-    <div style="font-size:1.3rem;font-weight:900;color:#f5ede0;margin-bottom:0.3rem">${site.location || site.cnLocation || ''}</div>
-    <div style="font-size:0.75rem;color:rgba(245,237,224,0.5);margin-bottom:1rem">${site.author || ''}${site.cnAuthor ? ' · ' + site.cnAuthor : ''}</div>
-    ${site.quote ? `<div style="font-style:italic;font-size:0.8rem;color:var(--gold);line-height:1.7;padding:0.75rem 1rem;border-left:3px solid var(--gold);background:rgba(201,168,76,0.05);border-radius:0 8px 8px 0;margin-bottom:1rem">"${site.quote}"</div>` : ''}
-    ${site.desc ? `<div style="font-size:0.78rem;color:rgba(245,237,224,0.7);line-height:1.7;margin-bottom:1.5rem">${site.desc}</div>` : ''}
-    <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
-      ${site.stamp ? `<span style="font-size:0.55rem;padding:0.25rem 0.6rem;background:rgba(201,168,76,0.12);color:var(--gold);border-radius:2px;border:1px solid rgba(201,168,76,0.25)">${site.stamp}</span>` : ''}
-      ${(site.atmosphere||[]).slice(0,3).map(a => `<span style="font-size:0.55rem;padding:0.25rem 0.6rem;background:rgba(61,92,48,0.12);color:#8ab87a;border-radius:2px;border:1px solid rgba(61,92,48,0.25)">${a}</span>`).join('')}
-    </div>
-  `;
+  card.onclick = function(e){e.stopPropagation()};
+  var emoji = site.emoji || '📖';
+  var work = site.work || site.cnWork || '';
+  var loc = site.location || site.cnLocation || '';
+  var author = site.author || '';
+  var cnauthor = site.cnAuthor ? ' · ' + site.cnAuthor : '';
+  var quote = site.quote || '';
+  var desc = site.desc || '';
+  var stamp = site.stamp || '';
+  var atmos = site.atmosphere || [];
+  var atmosHTML = '';
+  for (var i = 0; i < atmos.length && i < 3; i++) {
+    atmosHTML += '<span style="font-size:0.55rem;padding:0.25rem 0.6rem;background:rgba(61,92,48,0.12);color:#8ab87a;border-radius:2px;border:1px solid rgba(61,92,48,0.25)">' + atmos[i] + '</span>';
+  }
+  card.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">'
+    + '<span style="font-size:2.5rem">' + emoji + '</span>'
+    + '<button onclick="this.parentNode.parentNode.parentNode.remove()" style="background:none;border:none;color:rgba(245,237,224,0.4);font-size:1.5rem;cursor:pointer;line-height:1">x</button></div>'
+    + '<div style="font-size:0.65rem;color:#c9a84c;font-family:\'Cinzel\',serif;letter-spacing:0.25em;margin-bottom:0.3rem">' + work + '</div>'
+    + '<div style="font-size:1.3rem;font-weight:900;color:#f5ede0;margin-bottom:0.3rem">' + loc + '</div>'
+    + '<div style="font-size:0.75rem;color:rgba(245,237,224,0.5);margin-bottom:1rem">' + author + cnauthor + '</div>'
+    + (quote ? '<div style="font-style:italic;font-size:0.8rem;color:#c9a84c;line-height:1.7;padding:0.75rem 1rem;border-left:3px solid #c9a84c;background:rgba(201,168,76,0.05);border-radius:0 8px 8px 0;margin-bottom:1rem">"' + quote + '"</div>' : '')
+    + (desc ? '<div style="font-size:0.78rem;color:rgba(245,237,224,0.7);line-height:1.7;margin-bottom:1.5rem">' + desc + '</div>' : '')
+    + '<div style="display:flex;gap:0.5rem;flex-wrap:wrap">'
+    + (stamp ? '<span style="font-size:0.55rem;padding:0.25rem 0.6rem;background:rgba(201,168,76,0.12);color:#c9a84c;border-radius:2px;border:1px solid rgba(201,168,76,0.25)">' + stamp + '</span>' : '')
+    + atmosHTML + '</div>';
   overlay.appendChild(card);
   document.body.appendChild(overlay);
 }
