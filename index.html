@@ -1,11 +1,289 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0;url=index_new.html">
-  <title>文迹 · Literary Footprints</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文迹 · Literary Footprints — 情怀文旅资产平台</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap');
+:root {
+  --gold: #c9a84c; --gold-light: #e8d5a3; --gold-pale: rgba(201,168,76,0.12);
+  --gold-line: rgba(201,168,76,0.25); --ink: #0d0c0a; --ink-mid: #181610;
+  --ink-soft: #242018; --paper: #f5ede0; --paper-mid: #ede0cc; --paper-warm: #faf4ea;
+  --text-on-dark: rgba(245,237,224,0.88); --text-dim: rgba(245,237,224,0.42);
+  --moss: #3d5c30; --rust: #8a3e1a;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Serif SC',serif;background:var(--ink);color:var(--text-on-dark);overflow-x:hidden;cursor:none}
+.cursor{position:fixed;width:8px;height:8px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform 0.1s ease;mix-blend-mode:screen}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(201,168,76,0.5);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.18s ease}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:200;opacity:0.028;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:256px}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.25rem 3rem;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,rgba(13,12,10,0.95) 0%,transparent 100%);backdrop-filter:blur(8px)}
+.nav-logo{font-family:'Cinzel',serif;font-size:0.9rem;letter-spacing:0.35em;color:var(--gold);text-decoration:none}
+.nav-logo span{font-family:'Noto Serif SC',serif;font-size:1rem;font-weight:700;letter-spacing:0.15em;margin-right:0.5rem}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.3em;color:var(--text-dim);text-decoration:none;text-transform:uppercase;transition:color 0.2s}
+.nav-links a:hover{color:var(--gold)}
+.nav-cta{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.25em;color:var(--ink);background:var(--gold);padding:0.55rem 1.4rem;border:none;cursor:none;text-decoration:none;transition:background 0.2s}
+.nav-cta:hover{background:var(--gold-light)}
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:8rem 2rem 5rem}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 20% 50%,rgba(201,168,76,0.06) 0%,transparent 60%),radial-gradient(ellipse 40% 60% at 80% 30%,rgba(138,62,26,0.08) 0%,transparent 50%),radial-gradient(ellipse 50% 80% at 50% 100%,rgba(61,92,48,0.05) 0%,transparent 50%)}
+.hero-kanji{position:absolute;font-family:'Noto Serif SC',serif;font-weight:900;color:rgba(201,168,76,0.04);user-select:none;pointer-events:none;animation:floatKanji 20s ease-in-out infinite}
+.hero-kanji:nth-child(1){font-size:18rem;top:-5%;left:-3%;animation-delay:0s}
+.hero-kanji:nth-child(2){font-size:12rem;top:30%;right:-2%;animation-delay:-7s}
+.hero-kanji:nth-child(3){font-size:8rem;bottom:5%;left:20%;animation-delay:-13s}
+@keyframes floatKanji{0%,100%{transform:translateY(0) rotate(0deg)}33%{transform:translateY(-20px) rotate(1deg)}66%{transform:translateY(10px) rotate(-0.5deg)}}
+.hero-rule-v{position:absolute;left:3rem;top:12%;bottom:12%;width:1px;background:linear-gradient(180deg,transparent,var(--gold-line),transparent)}
+.hero-content{text-align:center;position:relative;max-width:860px;animation:heroReveal 1.4s cubic-bezier(0.16,1,0.3,1) both}
+@keyframes heroReveal{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+.hero-eyebrow{font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:0.55em;color:var(--gold);text-transform:uppercase;margin-bottom:1.8rem}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'—';margin:0 1rem;opacity:0.5}
+.hero-title{font-family:'Noto Serif SC',serif;font-size:clamp(3rem,8vw,6.5rem);font-weight:900;line-height:1;letter-spacing:0.08em;background:linear-gradient(135deg,#f5ede0 0%,#e8d5a3 40%,#c9a84c 70%,#c47d3a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.5rem}
+.hero-title-en{font-family:'Cinzel Decorative',serif;font-size:clamp(0.75rem,2vw,1.1rem);letter-spacing:0.45em;color:var(--gold);opacity:0.7;margin-bottom:2.5rem}
+.hero-divider{display:flex;align-items:center;justify-content:center;gap:1.5rem;margin-bottom:2.5rem}
+.hero-divider-line{width:100px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.hero-divider-line.right{background:linear-gradient(90deg,var(--gold),transparent)}
+.hero-divider-diamond{width:7px;height:7px;background:var(--gold);transform:rotate(45deg);opacity:0.7}
+.hero-tagline{font-size:clamp(0.9rem,2vw,1.1rem);color:var(--text-on-dark);line-height:2;max-width:560px;margin:0 auto 3.5rem;font-weight:300}
+.hero-cta-group{display:flex;gap:1.25rem;justify-content:center;flex-wrap:wrap}
+.btn-primary{font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--ink);background:linear-gradient(135deg,#e8d5a3,#c9a84c);padding:1rem 2.5rem;text-decoration:none;display:inline-block;transition:all 0.25s;cursor:none}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(201,168,76,0.3)}
+.btn-ghost{font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-line);padding:1rem 2.5rem;text-decoration:none;display:inline-block;transition:all 0.25s;cursor:none}
+.btn-ghost:hover{background:var(--gold-pale);border-color:var(--gold)}
+.hero-stats{display:flex;justify-content:center;gap:4rem;margin-top:5rem;padding-top:2.5rem;border-top:1px solid var(--gold-line);flex-wrap:wrap}
+.hero-stat-num{font-family:'Cinzel',serif;font-size:1.8rem;color:var(--gold);font-weight:600;line-height:1}
+.hero-stat-label{font-size:0.65rem;color:var(--text-dim);letter-spacing:0.2em;margin-top:0.4rem;font-family:'Cinzel',serif}
+section{position:relative}
+.section-wrap{max-width:1080px;margin:0 auto;padding:6rem 3rem}
+.section-label{font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:0.5em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:0.75rem}
+.section-label::before{content:'';width:24px;height:1px;background:var(--gold);opacity:0.6}
+.section-heading{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:900;line-height:1.35;color:var(--paper);margin-bottom:1rem}
+.section-heading em{font-style:normal;background:linear-gradient(90deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.how-bg{background:var(--ink-mid);border-top:1px solid var(--gold-line);border-bottom:1px solid var(--gold-line)}
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;margin-top:3.5rem}
+.how-card{padding:2rem 1.75rem;border:1px solid var(--gold-line);border-radius:2px;position:relative;background:var(--gold-pale);transition:all 0.3s}
+.how-card:hover{border-color:rgba(201,168,76,0.55);background:rgba(201,168,76,0.08);transform:translateY(-4px)}
+.how-num{font-family:'Cinzel',serif;font-size:2.5rem;font-weight:700;color:rgba(201,168,76,0.15);line-height:1;position:absolute;top:1.25rem;right:1.5rem}
+.how-icon{font-size:2rem;margin-bottom:1rem;display:block}
+.how-title{font-size:1rem;font-weight:700;color:var(--paper);margin-bottom:0.6rem;line-height:1.4}
+.how-desc{font-size:0.75rem;color:var(--text-dim);line-height:1.85}
+.roles-section{background:linear-gradient(180deg,var(--ink-mid) 0%,var(--ink-soft) 100%)}
+.roles-intro{max-width:600px;margin-bottom:4rem}
+.roles-intro p{font-size:0.88rem;color:var(--text-dim);line-height:2;margin-top:1rem}
+.roles-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5px;background:var(--gold-line);border:1px solid var(--gold-line)}
+.role-card{background:var(--ink-soft);padding:2.5rem 2rem;transition:background 0.3s;position:relative;overflow:hidden}
+.role-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;transform:scaleX(0);transform-origin:left;transition:transform 0.4s ease}
+.role-card.creator::before{background:var(--gold)}
+.role-card.consumer::before{background:#6a9a5a}
+.role-card.supplier::before{background:#8a6a3a}
+.role-card.platform::before{background:var(--rust)}
+.role-card:hover::before{transform:scaleX(1)}
+.role-card:hover{background:rgba(255,255,255,0.02)}
+.role-badge{font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:0.35em;text-transform:uppercase;padding:0.3rem 0.75rem;border-radius:1px;display:inline-block;margin-bottom:1.25rem}
+.role-badge.creator{background:var(--gold-pale);color:var(--gold);border:1px solid var(--gold-line)}
+.role-badge.consumer{background:rgba(106,154,90,0.1);color:#8ab87a;border:1px solid rgba(106,154,90,0.25)}
+.role-badge.supplier{background:rgba(138,106,58,0.1);color:#c49a5a;border:1px solid rgba(138,106,58,0.25)}
+.role-badge.platform{background:rgba(138,62,26,0.1);color:#c47a5a;border:1px solid rgba(138,62,26,0.2)}
+.role-title{font-size:1.25rem;font-weight:900;color:var(--paper);margin-bottom:0.4rem;letter-spacing:0.04em}
+.role-subtitle{font-size:0.72rem;color:var(--text-dim);font-family:'Cinzel',serif;letter-spacing:0.15em;margin-bottom:1.25rem}
+.role-items{list-style:none;display:flex;flex-direction:column;gap:0.6rem}
+.role-items li{font-size:0.78rem;color:var(--text-dim);padding-left:1.2rem;position:relative;line-height:1.65}
+.role-items li::before{content:'→';position:absolute;left:0;color:var(--gold);opacity:0.6}
+.design-section{background:var(--paper);color:var(--ink)}
+.design-section .section-label{color:#8a6030}
+.design-section .section-label::before{background:#8a6030}
+.design-section .section-heading{color:var(--ink)}
+.design-section .section-heading em{background:linear-gradient(90deg,#8a4020,#c9a84c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.design-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;margin-top:3.5rem}
+.design-text p{font-size:0.82rem;color:rgba(44,33,24,0.7);line-height:2;margin-bottom:1rem}
+.design-text strong{color:var(--ink);font-weight:700}
+.design-price-card{background:var(--ink);color:var(--paper);padding:2.5rem;border-radius:2px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.25)}
+.design-price-card::before{content:'Design.md';font-family:'Cinzel',serif;font-size:0.55rem;letter-spacing:0.4em;color:var(--gold);display:block;margin-bottom:1.5rem}
+.price-main{font-family:'Cinzel',serif;font-size:3rem;font-weight:700;color:var(--gold);line-height:1;margin-bottom:0.3rem}
+.price-period{font-size:0.7rem;color:rgba(245,237,224,0.45);font-family:'Cinzel',serif;letter-spacing:0.2em;margin-bottom:1.75rem}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:0.7rem;margin-bottom:2rem}
+.price-features li{font-size:0.75rem;color:rgba(245,237,224,0.7);padding-left:1.3rem;position:relative;line-height:1.6}
+.price-features li::before{content:'✦';position:absolute;left:0;color:var(--gold);font-size:0.55rem;top:0.15em}
+.price-btn{display:block;text-align:center;font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--ink);background:linear-gradient(135deg,#e8d5a3,#c9a84c);padding:0.9rem;text-decoration:none;transition:all 0.2s;cursor:none}
+.price-btn:hover{box-shadow:0 6px 25px rgba(201,168,76,0.3)}
+.price-note{font-size:0.62rem;color:rgba(245,237,224,0.3);text-align:center;margin-top:0.9rem;font-family:'Cinzel',serif;letter-spacing:0.1em}
+.board-section{background:var(--ink-mid)}
+.board-preview{margin-top:3rem;border:1px solid var(--gold-line);border-radius:2px;overflow:hidden}
+.board-header-row{display:grid;grid-template-columns:3rem 1fr auto auto;padding:0.85rem 1.5rem;background:var(--gold-pale);font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;border-bottom:1px solid var(--gold-line);gap:1rem}
+.board-row{display:grid;grid-template-columns:3rem 1fr auto auto;padding:1.1rem 1.5rem;align-items:center;border-bottom:1px solid rgba(201,168,76,0.08);transition:background 0.2s;gap:1rem;cursor:none}
+.board-row:hover{background:var(--gold-pale)}
+.board-row:last-child{border-bottom:none}
+.board-rank{font-family:'Cinzel',serif;font-size:0.9rem;font-weight:600;color:var(--gold);opacity:0.7}
+.board-rank.top{color:var(--gold);opacity:1;font-size:1.1rem}
+.board-card-title{font-size:0.88rem;font-weight:700;color:var(--paper);margin-bottom:0.2rem}
+.board-card-author{font-size:0.65rem;color:var(--text-dim);font-family:'Cinzel',serif;letter-spacing:0.1em}
+.board-tag{font-size:0.58rem;padding:0.2rem 0.6rem;background:var(--gold-pale);color:var(--gold);border-radius:1px;font-family:'Cinzel',serif;letter-spacing:0.1em;white-space:nowrap}
+.board-score{font-family:'Cinzel',serif;font-size:0.75rem;color:var(--gold);text-align:right;white-space:nowrap}
+.preview-section{background:var(--ink-soft);border-top:1px solid var(--gold-line)}
+.cards-scroll{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem}
+.mini-card{border:1px solid var(--gold-line);border-radius:2px;padding:1.75rem 1.5rem;position:relative;background:var(--gold-pale);transition:all 0.3s;cursor:none}
+.mini-card:hover{border-color:rgba(201,168,76,0.5);transform:translateY(-5px);box-shadow:0 15px 50px rgba(0,0,0,0.4)}
+.mini-card-number{position:absolute;top:1rem;right:1.25rem;font-family:'Cinzel',serif;font-size:0.55rem;color:var(--gold);letter-spacing:0.2em;opacity:0.6}
+.mini-card-book{font-size:1.8rem;margin-bottom:0.75rem}
+.mini-card-title{font-size:1rem;font-weight:900;color:var(--paper);margin-bottom:0.2rem}
+.mini-card-author{font-size:0.65rem;color:var(--text-dim);font-family:'Cinzel',serif;letter-spacing:0.1em;margin-bottom:1rem}
+.mini-card-quote{font-family:'IM Fell English',serif;font-style:italic;font-size:0.72rem;color:var(--gold);line-height:1.65;border-left:2px solid var(--gold-line);padding-left:0.75rem;margin-bottom:1rem}
+.mini-card-locs{display:flex;flex-wrap:wrap;gap:0.35rem}
+.mini-loc{font-size:0.58rem;padding:0.18rem 0.5rem;background:rgba(201,168,76,0.08);color:var(--text-dim);border-radius:1px;font-family:'Cinzel',serif}
+.mini-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:1.2rem;padding-top:1rem;border-top:1px solid rgba(201,168,76,0.1)}
+.mini-card-price{font-family:'Cinzel',serif;font-size:0.8rem;color:var(--gold);font-weight:600}
+.mini-card-cta{font-family:'Cinzel',serif;font-size:0.55rem;letter-spacing:0.2em;color:var(--ink);background:var(--gold);padding:0.3rem 0.8rem;text-decoration:none;cursor:none;border:none;transition:background 0.2s}
+.manifesto-section{background:var(--paper);color:var(--ink);text-align:center}
+.manifesto-section .section-label{justify-content:center;color:#8a6030}
+.manifesto-section .section-label::before{display:none}
+.manifesto-text{max-width:660px;margin:2.5rem auto 3rem;font-size:clamp(1rem,2.5vw,1.4rem);line-height:2.1;color:rgba(44,33,24,0.78);font-weight:300}
+.manifesto-text strong{font-weight:700;color:var(--ink)}
+.manifesto-seal{width:90px;height:90px;border:2px solid rgba(138,62,26,0.3);border-radius:50%;margin:0 auto 3rem;display:flex;align-items:center;justify-content:center;position:relative}
+.manifesto-seal::before{content:'';position:absolute;inset:5px;border:1px solid rgba(138,62,26,0.2);border-radius:50%}
+.manifesto-seal-inner{font-family:'Noto Serif SC',serif;font-size:1.6rem;font-weight:900;color:rgba(138,62,26,0.5);letter-spacing:0.05em}
+footer{background:var(--ink);border-top:1px solid var(--gold-line);padding:3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem}
+.footer-brand{font-family:'Cinzel',serif;font-size:0.9rem;letter-spacing:0.3em;color:var(--gold)}
+.footer-brand span{font-family:'Noto Serif SC',serif;font-size:1rem;font-weight:700;margin-right:0.4rem}
+.footer-copy{font-size:0.6rem;color:var(--text-dim);font-family:'Cinzel',serif;letter-spacing:0.15em}
+.footer-links{display:flex;gap:2rem;list-style:none}
+.footer-links a{font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:0.25em;color:var(--text-dim);text-decoration:none;text-transform:uppercase;transition:color 0.2s}
+.footer-links a:hover{color:var(--gold)}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+@media(max-width:768px){nav{padding:1rem 1.5rem}.nav-links{display:none}.section-wrap{padding:4rem 1.5rem}.roles-grid{grid-template-columns:1fr}.design-layout{grid-template-columns:1fr;gap:2rem}.cards-scroll{grid-template-columns:1fr}.board-header-row,.board-row{grid-template-columns:2.5rem 1fr auto}.board-header-row span:last-child,.board-row .board-score{display:none}footer{flex-direction:column;text-align:center}.footer-links{justify-content:center}.hero-rule-v{display:none}}
+</style>
 </head>
 <body>
-  <p>已迁移至 <a href="index_new.html">新版本</a></p>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="grain"></div>
+<nav>
+  <a class="nav-logo" href="#"><span>文迹</span>Literary Footprints</a>
+  <ul class="nav-links">
+    <li><a href="#how">如何运作</a></li>
+    <li><a href="#roles">四方价值</a></li>
+    <li><a href="#design">Design.md</a></li>
+    <li><a href="#board">巡礼榜</a></li>
+  </ul>
+  <a class="nav-cta" href="#design">开始创作</a>
+</nav>
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-kanji">迹</div><div class="hero-kanji">文</div><div class="hero-kanji">旅</div>
+  <div class="hero-rule-v"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">情怀文旅资产平台</div>
+    <h1 class="hero-title">文迹</h1>
+    <div class="hero-title-en">Literary Footprints</div>
+    <div class="hero-divider"><div class="hero-divider-line"></div><div class="hero-divider-diamond"></div><div class="hero-divider-line right"></div></div>
+    <p class="hero-tagline">用 Design.md 书写你的文学朝圣路线<br>每一张卡片，都是情感的独享资产<br>守护人类共同的文化记忆</p>
+    <div class="hero-cta-group">
+      <a class="btn-primary" href="#design">获取 Design.md</a>
+      <a class="btn-ghost" href="#board">探索巡礼榜</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hero-stat-num">Design<span style="font-size:1rem">.md</span></div><div class="hero-stat-label">审美准入门槛</div></div>
+      <div><div class="hero-stat-num">4</div><div class="hero-stat-label">价值共生角色</div></div>
+      <div><div class="hero-stat-num">∞</div><div class="hero-stat-label">文学坐标待发现</div></div>
+    </div>
+  </div>
+</section>
+<section class="how-bg" id="how">
+  <div class="section-wrap">
+    <div class="reveal"><div class="section-label">运作机制 · How It Works</div><h2 class="section-heading">一张卡片的<em>完整旅程</em></h2></div>
+    <div class="how-grid reveal">
+      <div class="how-card"><span class="how-num">01</span><span class="how-icon">📖</span><div class="how-title">读者付费获取 Design.md</div><p class="how-desc">订阅费筛选出真正有审美意愿的创造者。付费本身是一道情怀过滤器，维护平台内容的纯净度。</p></div>
+      <div class="how-card"><span class="how-num">02</span><span class="how-icon">✦</span><div class="how-title">按规范创作文旅巡礼卡片</div><p class="how-desc">以 Design.md 为框架，输出文学坐标、情感叙事与实用路线，形成个人独享的文化资产。</p></div>
+      <div class="how-card"><span class="how-num">03</span><span class="how-icon">🏆</span><div class="how-title">卡片上榜 · 积累声望</div><p class="how-desc">优质卡片进入巡礼榜，获得曝光与打榜积分。排名越高，创造者的文化影响力越强。</p></div>
+      <div class="how-card"><span class="how-num">04</span><span class="how-icon">🗺</span><div class="how-title">消费者购买卡片 · 真实出行</div><p class="how-desc">巡礼者购买卡片作为出行指南，沿着文学坐标真实行走，触发文旅供应商的精准导流。</p></div>
+      <div class="how-card"><span class="how-num">05</span><span class="how-icon">🔄</span><div class="how-title">供应商联名 · 价值回流</div><p class="how-desc">酒店、书店、咖啡馆等文旅供应商通过内容自然触发获得导流，反哺创造者与平台生态。</p></div>
+    </div>
+  </div>
+</section>
+<section class="roles-section" id="roles">
+  <div class="section-wrap">
+    <div class="reveal roles-intro">
+      <div class="section-label">四方共生 · Four Roles</div>
+      <h2 class="section-heading">每个角色都<em>找到自己的价值</em></h2>
+      <p>平台不是信息中介，而是一个情感资产的生态系统。创造者、消费者、供应商与平台之间形成有机的价值循环——不是单向变现，而是相互滋养。</p>
+    </div>
+    <div class="roles-grid reveal">
+      <div class="role-card creator"><span class="role-badge creator">Creator · 创造者</span><div class="role-title">情怀读者</div><div class="role-subtitle">Literary Reader</div><ul class="role-items"><li>用 Design.md 创作个人独享的文旅资产</li><li>卡片上榜带来文化声望与影响力积累</li><li>销售分成：每次被购买获得收益回流</li><li>与供应商联名，实现创作变现</li></ul></div>
+      <div class="role-card consumer"><span class="role-badge consumer">Consumer · 消费者</span><div class="role-title">巡礼者</div><div class="role-subtitle">Pilgrim Traveler</div><ul class="role-items"><li>购买高质量文学巡礼卡片作为出行指南</li><li>获得有情感温度的文旅决策参考</li><li>沿卡片坐标真实行走，完成精神朝圣</li><li>为优质创造者打榜，影响内容生态</li></ul></div>
+      <div class="role-card supplier"><span class="role-badge supplier">Supplier · 供应商</span><div class="role-title">文旅服务方</div><div class="role-subtitle">Travel Service</div><ul class="role-items"><li>通过内容自然触发获得精准高质量导流</li><li>与创造者联名，提升品牌文化调性</li><li>无广告式曝光，情怀用户转化率更高</li><li>反哺平台生态，建立长期合作关系</li></ul></div>
+      <div class="role-card platform"><span class="role-badge platform">Platform · 平台</span><div class="role-title">情怀守门人</div><div class="role-subtitle">Cultural Guardian</div><ul class="role-items"><li>维护 Design.md 审美标准与平台纯净度</li><li>订阅费 + 交易抽佣构成可持续收入</li><li>供应商联名费用支持平台独立运营</li><li>守护文学文化记忆的长期价值沉淀</li></ul></div>
+    </div>
+  </div>
+</section>
+<section class="design-section" id="design">
+  <div class="section-wrap">
+    <div class="design-layout">
+      <div class="design-text reveal">
+        <div class="section-label">准入规范 · Design.md</div>
+        <h2 class="section-heading">情怀的<em>门槛</em><br>也是质量的<em>保证</em></h2>
+        <p style="margin-top:1.5rem">Design.md 不是模板，是<strong>一套审美契约</strong>。它定义了一张合格的文旅巡礼卡片应有的文学厚度、视觉规范与内容诚信标准。</p>
+        <p>愿意为此付费的创造者，已经通过了第一道筛选。这保证了平台上每一张卡片都是<strong>有情感真诚度的独立创作</strong>，而非信息堆砌。</p>
+        <p>付费也是一种声明：<strong>我愿意为情怀负责。</strong></p>
+      </div>
+      <div class="reveal">
+        <div class="design-price-card">
+          <div class="price-main">¥ 68</div>
+          <div class="price-period">/ 年 · Per Year</div>
+          <ul class="price-features"><li>完整 Design.md 规范文档</li><li>文学坐标验证标准与引言规范</li><li>视觉输出模板（HTML / PDF）</li><li>卡片上榜资格 · 积分体系准入</li><li>创造者社群准入与季度选题参考</li></ul>
+          <a class="price-btn" href="#">申请创作资格</a>
+          <p class="price-note">订阅即认同平台情怀公约</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="board-section" id="board">
+  <div class="section-wrap">
+    <div class="reveal"><div class="section-label">巡礼榜 · Literary Leaderboard</div><h2 class="section-heading">最受<em>巡礼者</em>青睐的卡片</h2></div>
+    <div class="board-preview reveal">
+      <div class="board-header-row"><span>排名</span><span>卡片信息</span><span>标签</span><span>热度分</span></div>
+      <div class="board-row"><div class="board-rank top">🥇</div><div class="board-card-info"><div class="board-card-title">《挪威的森林》东京文学巡礼</div><div class="board-card-author">by Chunyuan · 2026.05</div></div><div class="board-tag">村上春树</div><div class="board-score">9,847 pts</div></div>
+      <div class="board-row"><div class="board-rank top">🥈</div><div class="board-card-info"><div class="board-card-title">太宰治的津轻 · 生与死的地理</div><div class="board-card-author">by Miyazaki · 2026.04</div></div><div class="board-tag">太宰治</div><div class="board-score">7,203 pts</div></div>
+      <div class="board-row"><div class="board-rank top">🥉</div><div class="board-card-info"><div class="board-card-title">加缪的阿尔及尔 · 异乡人之城</div><div class="board-card-author">by Lemon · 2026.03</div></div><div class="board-tag">加缪</div><div class="board-score">6,415 pts</div></div>
+      <div class="board-row"><div class="board-rank">04</div><div class="board-card-info"><div class="board-card-title">波伏娃的巴黎左岸咖啡馆路线</div><div class="board-card-author">by Weiran · 2026.03</div></div><div class="board-tag">波伏娃</div><div class="board-score">5,188 pts</div></div>
+      <div class="board-row"><div class="board-rank">05</div><div class="board-card-info"><div class="board-card-title">鲁迅的绍兴 · 故乡与彷徨</div><div class="board-card-author">by Songyue · 2026.02</div></div><div class="board-tag">鲁迅</div><div class="board-score">4,902 pts</div></div>
+    </div>
+  </div>
+</section>
+<section class="preview-section">
+  <div class="section-wrap">
+    <div class="reveal"><div class="section-label">精选卡片 · Featured Cards</div><h2 class="section-heading">每一张都是<em>独立的文化坐标</em></h2></div>
+    <div class="cards-scroll reveal">
+      <div class="mini-card"><div class="mini-card-number">No.001</div><div class="mini-card-book">🌲</div><div class="mini-card-title">挪威的森林</div><div class="mini-card-author">村上春树 · 1987</div><div class="mini-card-quote">"死并不是生的对立面，而是作为生的一部分永存。"</div><div class="mini-card-locs"><span class="mini-loc">井之头公园</span><span class="mini-loc">早稻田大学</span><span class="mini-loc">青山霊園</span><span class="mini-loc">三鹰</span><span class="mini-loc">京都</span></div><div class="mini-card-footer"><span class="mini-card-price">¥ 18</span><a class="mini-card-cta" href="index_new.html">查看卡片</a></div></div>
+      <div class="mini-card"><div class="mini-card-number">No.024</div><div class="mini-card-book">🌊</div><div class="mini-card-title">人间失格</div><div class="mini-card-author">太宰治 · 1948</div><div class="mini-card-quote">"生而为人，我很抱歉。"</div><div class="mini-card-locs"><span class="mini-loc">津轻半岛</span><span class="mini-loc">三鹰太宰治馆</span><span class="mini-loc">玉川上水</span></div><div class="mini-card-footer"><span class="mini-card-price">¥ 18</span><a class="mini-card-cta" href="index_new.html">查看卡片</a></div></div>
+      <div class="mini-card"><div class="mini-card-number">No.037</div><div class="mini-card-book">☀️</div><div class="mini-card-title">局外人</div><div class="mini-card-author">加缪 · 1942</div><div class="mini-card-quote">"我知道这个世界，我并不是为了这个世界而存在。"</div><div class="mini-card-locs"><span class="mini-loc">阿尔及尔老城</span><span class="mini-loc">地中海海滩</span><span class="mini-loc">蒙马岱墓地</span></div><div class="mini-card-footer"><span class="mini-card-price">¥ 18</span><a class="mini-card-cta" href="index_new.html">查看卡片</a></div></div>
+    </div>
+  </div>
+</section>
+<section class="manifesto-section">
+  <div class="section-wrap" style="text-align:center">
+    <div class="reveal">
+      <div class="section-label">平台宣言 · Manifesto</div>
+      <div class="manifesto-seal"><div class="manifesto-seal-inner">文</div></div>
+      <p class="manifesto-text">我们相信，<strong>文学不只是阅读的事</strong>。<br>它应该被走进去，被感受，被以身体丈量。<br><br>每一张巡礼卡片，都是一个人<strong>用情感与文字创造的私人资产</strong>，<br>也是人类共同文化记忆的一个坐标。<br><br>我们收取情怀的门槛费，<strong>不为盈利，为了纯净</strong>。<br>让真正热爱的人，在这里找到彼此。</p>
+      <a class="btn-primary" style="display:inline-block;margin-bottom:1rem" href="#design">加入文迹</a>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="footer-brand"><span>文迹</span>Literary Footprints</div>
+  <ul class="footer-links"><li><a href="#">关于平台</a></li><li><a href="#">创作规范</a></li><li><a href="#">供应商合作</a></li><li><a href="#">联系我们</a></li></ul>
+  <div class="footer-copy">© 2026 Literary Footprints · 守护人类共同的文化记忆</div>
+</footer>
+<script>
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
+function animateRing(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animateRing)}
+animateRing();document.querySelectorAll('a,button,.how-card,.role-card,.mini-card,.board-row').forEach(el=>{el.addEventListener('mouseenter',()=>{cursor.style.transform='translate(-50%,-50%) scale(2)';ring.style.transform='translate(-50%,-50%) scale(1.5)';ring.style.borderColor='rgba(201,168,76,0.8)'});el.addEventListener('mouseleave',()=>{cursor.style.transform='translate(-50%,-50%) scale(1)';ring.style.transform='translate(-50%,-50%) scale(1)';ring.style.borderColor='rgba(201,168,76,0.5)'})});
+const revealEls=document.querySelectorAll('.reveal'),observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.12});
+revealEls.forEach(el=>observer.observe(el));
+window.addEventListener('scroll',()=>{const nav=document.querySelector('nav');nav.style.background=window.scrollY>80?'rgba(13,12,10,0.97)':'linear-gradient(180deg,rgba(13,12,10,0.95) 0%,transparent 100%)'});
+</script>
 </body>
 </html>
