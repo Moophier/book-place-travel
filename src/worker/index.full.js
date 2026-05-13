@@ -184,7 +184,7 @@ body{overflow-y:auto}
     <li><a href="#design">Design.md</a></li>
     <li><a href="#board">巡礼榜</a></li>
   </ul>
-  <a class="nav-cta" href="#design">开始创作</a>
+  <a class="nav-cta" href="#" id="navCtaBtn" style="cursor:pointer">登录 / 注册</a>
 </nav>
 <section class="hero">
   <div class="hero-bg"></div>
@@ -438,10 +438,11 @@ function showProfile() {
 }
 
 // ── Fix nav CTA ──
-setTimeout(() => {
-  const cta = document.querySelector('.nav-cta');
-  if (cta) { cta.href = '#'; cta.onclick = (e) => { e.preventDefault(); currentUser ? showProfile() : showAuth(); }; }
-}, 100);
+document.addEventListener('DOMContentLoaded', () => {
+  const cta = document.getElementById('navCtaBtn');
+  if (cta) cta.addEventListener('click', e => { e.preventDefault(); currentUser ? showProfile() : showAuth(); });
+  updateNavUser();
+});
 
 // ── Nav click fix ──
 document.querySelectorAll('a[href^="#"]').forEach(a => {
