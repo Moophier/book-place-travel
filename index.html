@@ -149,8 +149,11 @@ footer{background:var(--ink);border-top:1px solid var(--gold-line);padding:3rem;
 .footer-links{display:flex;gap:2rem;list-style:none}
 .footer-links a{font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:0.25em;color:var(--text-dim);text-decoration:none;text-transform:uppercase;transition:color 0.2s}
 .footer-links a:hover{color:var(--gold)}
-.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal{opacity:1;transform:translateY(0);transition:opacity 0.8s ease,transform 0.8s ease}
+.reveal.animate{opacity:0;transform:translateY(30px)}
 .reveal.visible{opacity:1;transform:translateY(0)}
+html{overflow-y:auto}
+body{overflow-y:auto}
 @media(max-width:768px){nav{padding:1rem 1.5rem}.nav-links{display:none}.section-wrap{padding:4rem 1.5rem}.roles-grid{grid-template-columns:1fr}.design-layout{grid-template-columns:1fr;gap:2rem}.cards-scroll{grid-template-columns:1fr}.board-header-row,.board-row{grid-template-columns:2.5rem 1fr auto}.board-header-row span:last-child,.board-row .board-score{display:none}footer{flex-direction:column;text-align:center}.footer-links{justify-content:center}.hero-rule-v{display:none}}
 </style>
 </head>
