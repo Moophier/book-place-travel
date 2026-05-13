@@ -301,6 +301,96 @@ animateRing();document.querySelectorAll('a,button,.how-card,.role-card,.mini-car
 const revealEls=document.querySelectorAll('.reveal'),observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.12});
 revealEls.forEach(el=>observer.observe(el));
 window.addEventListener('scroll',()=>{const nav=document.querySelector('nav');nav.style.background=window.scrollY>80?'rgba(13,12,10,0.97)':'linear-gradient(180deg,rgba(13,12,10,0.95) 0%,transparent 100%)'});
+
+// ── API Base ──
+const API = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+  ? '/' : 'https://literary-footprints-api.moop.workers.dev';
+
+// ── Dynamic Leaderboard ──
+async function loadLeaderboard() {
+  try {
+    const res = await fetch(API + '/api/search?q=');
+    if (!res.ok) throw new Error('API unavailable');
+    const data = await res.json();
+    if (!data.results) return;
+    const scored = data.results.map(c => ({
+      ...c,
+      totalScore: Math.round((c.scores?.purchase||10)*1 + (c.scores?.travel||1)*3 + (c.scores?.resonance||1)*0.5)
+    })).sort((a,b) => b.totalScore - a.totalScore).slice(0, 5);
+    const tags = ['🥇','🥈','🥉','04','05'];
+    const rows = document.querySelectorAll('.board-row');
+    scored.forEach((item, i) => {
+      if (rows[i]) {
+        rows[i].querySelector('.board-rank').textContent = tags[i];
+        rows[i].querySelector('.board-card-title').textContent = item.location?.length > 20 ? item.location.slice(0,20)+'...' : item.location;
+        rows[i].querySelector('.board-card-author').textContent = 'by ' + item.author;
+        rows[i].querySelector('.board-tag').textContent = item.cnAuthor || item.author?.split(' ').pop();
+        rows[i].querySelector('.board-score').textContent = (item.totalScore || Math.floor(Math.random()*5000+1000)).toLocaleString() + ' pts';
+        rows[i].style.cursor = 'pointer';
+        rows[i].onclick = () => openSiteModal(item.id || item.location);
+      }
+    });
+  } catch(e) { console.log('Leaderboard: using static data', e); }
+}
+
+// ── Site Modal ──
+async function openSiteModal(siteId) {
+  const site = await fetch(API + '/api/site/' + siteId.replace(' ','_').toLowerCase()).then(r=>r.json()).catch(()=>null);
+  if (!site || site.error) { alert('坐标详情加载中...'); return; }
+  const overlay = document.createElement('div'); overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;padding:2rem';
+  overlay.onclick = () => overlay.remove();
+  const card = document.createElement('div'); card.style.cssText = 'background:#181610;border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:2rem;max-width:500px;width:100%;max-height:80vh;overflow-y:auto';
+  card.onclick = e => e.stopPropagation();
+  card.innerHTML = \`
+    <div style="display:flex;justify-content:space-between;margin-bottom:1.5rem">
+      <div><span style="font-size:2rem">\${site.emoji||'📖'}</span></div>
+      <button onclick="this.closest('div[style]').remove()" style="background:none;border:none;color:rgba(245,237,224,0.5);font-size:1.5rem;cursor:pointer">×</button>
+    </div>
+    <div style="font-size:0.7rem;color:var(--gold);font-family:'Cinzel',serif;letter-spacing:0.2em;margin-bottom:0.3rem">\${site.work||''}</div>
+    <div style="font-size:1.4rem;font-weight:900;color:#f5ede0;margin-bottom:0.5rem">\${site.location||siteId}</div>
+    <div style="font-size:0.8rem;color:rgba(245,237,224,0.5);margin-bottom:1rem">\${site.author||''} · \${site.cnAuthor||''}</div>
+    <div style="font-style:italic;font-size:0.85rem;color:var(--gold);line-height:1.7;padding:0.75rem 1rem;border-left:3px solid var(--gold);background:rgba(201,168,76,0.05);border-radius:0 8px 8px 0;margin-bottom:1rem">"\${site.quote||''}"</div>
+    <div style="font-size:0.78rem;color:rgba(245,237,224,0.7);line-height:1.7;margin-bottom:1.5rem">\${site.desc||''}</div>
+    <div style="display:flex;gap:0.75rem">
+      <div style="font-size:0.6rem;padding:0.35rem 0.7rem;background:rgba(201,168,76,0.12);color:var(--gold);border-radius:2px;border:1px solid rgba(201,168,76,0.25)">\${site.stamp||'文学坐标'}</div>
+      \${(site.atmosphere||[]).slice(0,2).map(a => \`<div style="font-size:0.6rem;padding:0.35rem 0.7rem;background:rgba(61,92,48,0.12);color:#8ab87a;border-radius:2px;border:1px solid rgba(61,92,48,0.25)">\${a}</div>\`).join('')}
+    </div>
+  \`;
+  overlay.appendChild(card); document.body.appendChild(overlay);
+}
+
+// ── Interactive Search ──
+function setupSearch() {
+  const hero = document.querySelector('.hero-tagline');
+  if (!hero) return;
+  const searchDiv = document.createElement('div');
+  searchDiv.style.cssText = 'margin:0 auto 3.5rem;max-width:400px';
+  searchDiv.innerHTML = '<input type="text" id="searchInput" placeholder="搜索作者、地点、作品..." style="width:100%;padding:0.75rem 1rem;background:rgba(13,12,10,0.8);border:1px solid rgba(201,168,76,0.25);border-radius:2px;color:#f5ede0;font-family:\'Noto Serif SC\',serif;font-size:0.8rem;outline:none">';
+  hero.parentNode.insertBefore(searchDiv, hero.nextSibling);
+  document.getElementById('searchInput').addEventListener('keydown', async e => {
+    if (e.key !== 'Enter') return;
+    const q = e.target.value.trim();
+    if (!q) return;
+    try {
+      const res = await fetch(API + '/api/search?q=' + encodeURIComponent(q));
+      const data = await res.json();
+      if (data.results?.length) {
+        openSiteModal(data.results[0].id);
+        if (data.results.length > 1) {
+          setTimeout(() => alert(\`找到 \${data.results.length} 个结果，已打开最相关的 "\${data.results[0].location}"\`), 500);
+        }
+      } else {
+        alert('未找到相关结果');
+      }
+    } catch(e) { alert('搜索服务暂不可用'); }
+  });
+}
+
+// ── Init ──
+document.addEventListener('DOMContentLoaded', () => {
+  loadLeaderboard();
+  setupSearch();
+});
 </script>
 </body>
 </html>`;
