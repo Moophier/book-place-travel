@@ -32,9 +32,8 @@ const ROOT_HTML = `<!DOCTYPE html>
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{font-family:'Noto Serif SC',serif;background:var(--ink);color:var(--text-on-dark);overflow-x:hidden;cursor:none}
-.cursor{position:fixed;width:12px;height:12px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform 0.1s ease;box-shadow:0 0 12px rgba(201,168,76,0.6);mix-blend-mode:screen}
-.cursor-ring{position:fixed;width:40px;height:40px;border:1px solid rgba(201,168,76,0.5);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.18s ease;background:radial-gradient(circle,rgba(201,168,76,0.08) 0%,transparent 70%)}
+body{font-family:'Noto Serif SC',serif;background:var(--ink);color:var(--text-on-dark);overflow-x:hidden;cursor:auto}
+.cursor,.cursor-ring{display:none}
 .grain{position:fixed;inset:0;pointer-events:none;z-index:200;opacity:0.028;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:256px}
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.25rem 3rem;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,rgba(13,12,10,0.95) 0%,transparent 100%);backdrop-filter:blur(8px)}
 .nav-logo{font-family:'Cinzel',serif;font-size:0.9rem;letter-spacing:0.35em;color:var(--gold);text-decoration:none}
@@ -176,8 +175,6 @@ body{overflow-y:auto}
 </style>
 </head>
 <body>
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
 <div class="grain"></div>
 <nav>
   <a class="nav-logo" href="#"><span>文迹</span>Literary Footprints</a>
@@ -298,10 +295,6 @@ body{overflow-y:auto}
   <div class="footer-copy">© 2026 Literary Footprints · 守护人类共同的文化记忆</div>
 </footer>
 <script>
-const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
-function animateRing(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animateRing)}
-animateRing();document.querySelectorAll('a,button,.how-card,.role-card,.mini-card,.board-row').forEach(el=>{el.addEventListener('mouseenter',()=>{cursor.style.transform='translate(-50%,-50%) scale(2)';ring.style.transform='translate(-50%,-50%) scale(1.5)';ring.style.borderColor='rgba(201,168,76,0.8)'});el.addEventListener('mouseleave',()=>{cursor.style.transform='translate(-50%,-50%) scale(1)';ring.style.transform='translate(-50%,-50%) scale(1)';ring.style.borderColor='rgba(201,168,76,0.5)'})});
 const revealEls=document.querySelectorAll('.reveal'),observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.12});
 revealEls.forEach(el=>observer.observe(el));
 window.addEventListener('scroll',()=>{const nav=document.querySelector('nav');nav.style.background=window.scrollY>80?'rgba(13,12,10,0.97)':'linear-gradient(180deg,rgba(13,12,10,0.95) 0%,transparent 100%)'});
